@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>웹 어몽어스 미니 게임</title>
+    <title>Among Us - Web Edition</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            user-select: none;
         }
 
         body {
-            background-color: #1a1a2e;
+            background-color: #05050a;
             color: #ffffff;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -23,303 +24,538 @@
             overflow: hidden;
         }
 
-        h1 {
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px #000;
-        }
-
-        /* 미션 게이지 바 */
-        #task-bar-container {
-            width: 600px;
-            height: 25px;
-            background-color: #333;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            overflow: hidden;
+        #game-container {
             position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 3px solid #2a2a40;
         }
 
-        #task-bar {
+        /* UI 레이어 */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+        }
+
+        /* 미션 바 */
+        .task-container {
+            width: 320px;
+            height: 22px;
+            background: rgba(20, 20, 30, 0.8);
+            border: 2px solid #555;
+            border-radius: 4px;
+            padding: 2px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .task-bar {
             width: 0%;
             height: 100%;
-            background-color: #00ffcc;
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #00b16a, #2ecc71);
+            border-radius: 2px;
+            transition: width 0.2s ease;
         }
 
-        #task-text {
+        .task-title {
+            position: absolute;
+            top: 18px;
+            left: 25px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* 미션 상호작용 게이지 */
+        #interaction-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 14px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        /* 게임 캔버스 */
-        #gameCanvas {
-            background-color: #16213e;
-            border: 4px solid #0f3460;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            border: 2px solid #f1c40f;
         }
 
-        /* 조작법 안내 및 결과 메시지 */
-        #controls {
-            margin-top: 15px;
-            text-align: center;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        #status-message {
+        #interaction-bar-bg {
+            width: 200px;
+            height: 15px;
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
             margin-top: 10px;
-            font-size: 20px;
-            font-weight: bold;
-            height: 30px;
         }
 
-        .win { color: #00ffcc; }
-        .lose { color: #ff4d4d; }
+        #interaction-bar {
+            width: 0%;
+            height: 100%;
+            background: #f1c40f;
+        }
 
-        /* 다시 시작 버튼 */
-        #restart-btn {
-            margin-top: 10px;
-            padding: 8px 16px;
-            font-size: 16px;
+        /* 화면 오버레이 메시지 */
+        #overlay-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #overlay-title {
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .victory { color: #2ecc71; text-shadow: 0 0 20px rgba(46, 204, 113, 0.6); }
+        .defeat { color: #e74c3c; text-shadow: 0 0 20px rgba(231, 76, 60, 0.6); }
+
+        #start-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
             font-weight: bold;
-            background-color: #e94560;
+            background: #3498db;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            display: none;
+            pointer-events: auto;
+            transition: 0.2s;
         }
 
-        #restart-btn:hover {
-            background-color: #ff6b81;
+        #start-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        #controls-guide {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            font-size: 13px;
+            color: #aaa;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 12px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-    <h1>AMONG US - WEB EDITION</h1>
-    
-    <!-- 미션 진행률 바 -->
-    <div id="task-bar-container">
-        <div id="task-bar"></div>
-        <div id="task-text">TOTAL TASKS COMPLETED</div>
-    </div>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="900" height="600"></canvas>
+        
+        <!-- UI 레이어 -->
+        <div id="ui-layer">
+            <div class="task-container">
+                <div class="task-title">TOTAL TASKS COMPLETED</div>
+                <div id="task-bar" class="task-bar"></div>
+            </div>
+            
+            <div id="controls-guide">
+                🎮 이동: <b>WASD / 방향키</b> | 🛠️ 미션 수행: <b>E 키 유지</b>
+            </div>
+        </div>
 
-    <!-- 게임 화면 -->
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <!-- 미션 인터랙션 UI -->
+        <div id="interaction-overlay">
+            <div id="interaction-text" style="color: #f1c40f; font-weight: bold;">미션 진행 중... (E 유지)</div>
+            <div id="interaction-bar-bg">
+                <div id="interaction-bar"></div>
+            </div>
+        </div>
 
-    <div id="status-message"></div>
-    <button id="restart-btn" onclick="resetGame()">다시 시작</button>
-
-    <div id="controls">
-        <p>🎮 <b>이동:</b> 방향키 또는 W, A, S, D | 🛠️ <b>미션 수행:</b> 노란색 영역에서 [E] 키 누르기</p>
+        <!-- 오버레이 화면 (시작/결과) -->
+        <div id="overlay-screen">
+            <div id="overlay-title">AMONG US</div>
+            <div id="overlay-sub" style="color: #ccc; margin-bottom: 10px;">크루원: 미션을 모두 완료하고 임포스터를 피하십시오!</div>
+            <button id="start-btn" onclick="startGame()">게임 시작</button>
+        </div>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+
         const taskBar = document.getElementById('task-bar');
-        const statusMessage = document.getElementById('status-message');
-        const restartBtn = document.getElementById('restart-btn');
+        const overlayScreen = document.getElementById('overlay-screen');
+        const overlayTitle = document.getElementById('overlay-title');
+        const overlaySub = document.getElementById('overlay-sub');
+        const startBtn = document.getElementById('start-btn');
+        const interactionOverlay = document.getElementById('interaction-overlay');
+        const interactionBar = document.getElementById('interaction-bar');
 
-        // 게임 상태
-        let gameOver = false;
+        // 게임 변수
+        let gameActive = false;
         let keys = {};
+        let animationFrameId;
 
-        // 플레이어 설정
+        // 플레이어
         const player = {
-            x: 50,
-            y: 50,
-            radius: 15,
-            color: '#2ecc71', // 초록색 (크루원)
-            speed: 3
+            x: 150,
+            y: 150,
+            radius: 16,
+            color: '#2ecc71',
+            speed: 3.2,
+            facingLeft: false,
+            isAlive: true
         };
 
-        // 임포스터 설정
+        // 임포스터 (AI)
         const imposter = {
-            x: 550,
-            y: 350,
-            radius: 15,
-            color: '#e74c3c', // 빨간색 (임포스터)
-            speed: 1.8
+            x: 1350,
+            y: 850,
+            radius: 16,
+            color: '#e74c3c',
+            speed: 2.6,
+            facingLeft: false,
+            targetX: 1350,
+            targetY: 850,
+            changeTargetTimer: 0
         };
 
-        // 미션 위치 데이터
-        let tasks = [
-            { x: 100, y: 300, radius: 20, completed: false },
-            { x: 300, y: 100, radius: 20, completed: false },
-            { x: 500, y: 250, radius: 20, completed: false }
+        // 맵 구조물 (벽)
+        const walls = [
+            { x: 0, y: 0, w: 1500, h: 40 },
+            { x: 0, y: 0, w: 40, h: 1000 },
+            { x: 0, y: 960, w: 1500, h: 40 },
+            { x: 1460, y: 0, w: 40, h: 1000 },
+            // 내부 벽면 구조
+            { x: 300, y: 40, w: 40, h: 400 },
+            { x: 300, y: 550, w: 40, h: 410 },
+            { x: 650, y: 200, w: 500, h: 40 },
+            { x: 650, y: 200, w: 40, h: 500 },
+            { x: 950, y: 450, w: 40, h: 510 }
         ];
 
-        // 키 입력 이벤트 리스너
-        window.addEventListener('keydown', (e) => {
-            keys[e.key.toLowerCase()] = true;
-            
-            // 미션 수행 (E 키)
-            if (e.key.toLowerCase() === 'e' && !gameOver) {
-                checkTaskCompletion();
-            }
+        // 미션 패널
+        let tasks = [
+            { id: 1, x: 150, y: 850, w: 50, h: 50, progress: 0, completed: false },
+            { id: 2, x: 800, y: 100, w: 50, h: 50, progress: 0, completed: false },
+            { id: 3, x: 1300, y: 300, w: 50, h: 50, progress: 0, completed: false },
+            { id: 4, x: 800, y: 800, w: 50, h: 50, progress: 0, completed: false }
+        ];
+
+        let activeTask = null;
+
+        // 키 이벤트 처리
+        window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', e => { 
+            keys[e.key.toLowerCase()] = false; 
+            if (e.key.toLowerCase() === 'e') resetTaskProgress();
         });
 
-        window.addEventListener('keyup', (e) => {
-            keys[e.key.toLowerCase()] = false;
-        });
+        function startGame() {
+            player.x = 120;
+            player.y = 120;
+            player.isAlive = true;
 
-        // 미션 성공 여부 확인
-        function checkTaskCompletion() {
-            tasks.forEach(task => {
-                if (!task.completed) {
-                    const dist = Math.hypot(player.x - task.x, player.y - task.y);
-                    // 미션 지역 안에서 E 키를 누른 경우
-                    if (dist < player.radius + task.radius) {
-                        task.completed = true;
-                        updateTaskProgress();
-                    }
+            imposter.x = 1350;
+            imposter.y = 850;
+
+            tasks.forEach(t => { t.progress = 0; t.completed = false; });
+            updateTaskBar();
+
+            overlayScreen.style.display = 'none';
+            gameActive = true;
+
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            gameLoop();
+        }
+
+        // AABB 충돌 감지
+        function checkWallCollision(newX, newY, radius) {
+            for (let w of walls) {
+                if (newX + radius > w.x && newX - radius < w.x + w.w &&
+                    newY + radius > w.y && newY - radius < w.y + w.h) {
+                    return true;
                 }
-            });
-        }
-
-        // 미션 게이지 업데이트
-        function updateTaskProgress() {
-            const completedCount = tasks.filter(t => t.completed).length;
-            const progress = (completedCount / tasks.length) * 100;
-            taskBar.style.width = progress + '%';
-
-            // 모든 미션 완료 시 승리
-            if (completedCount === tasks.length) {
-                endGame(true);
             }
+            return false;
         }
 
-        // 캐릭터 그리기 함수 (어몽어스 캐릭터 형태)
-        function drawCharacter(x, y, color, isFacingLeft = false) {
-            ctx.save();
-            ctx.translate(x, y);
+        // 캐릭터 이동 및 벽 충돌 처리
+        function updatePlayer() {
+            let dx = 0;
+            let dy = 0;
 
-            // 가방 (Backpack)
-            ctx.fillStyle = color;
-            ctx.fillRect(isFacingLeft ? 5 : -15, -8, 10, 16);
+            if (keys['arrowup'] || keys['w']) dy -= 1;
+            if (keys['arrowdown'] || keys['s']) dy += 1;
+            if (keys['arrowleft'] || keys['a']) { dx -= 1; player.facingLeft = true; }
+            if (keys['arrowright'] || keys['d']) { dx += 1; player.facingLeft = false; }
 
-            // 몸통
-            ctx.beginPath();
-            ctx.arc(0, -5, 12, Math.PI, 0, false);
-            ctx.rect(-12, -5, 24, 18);
-            ctx.fill();
+            if (dx !== 0 && dy !== 0) {
+                dx *= 0.7071;
+                dy *= 0.7071;
+            }
 
-            // 다리
-            ctx.fillRect(-10, 10, 7, 8);
-            ctx.fillRect(3, 10, 7, 8);
+            let nextX = player.x + dx * player.speed;
+            let nextY = player.y + dy * player.speed;
 
-            // 고글 (Visor)
-            ctx.fillStyle = '#a5d6a7'; // 연한 바이저 색
-            ctx.beginPath();
-            const visorX = isFacingLeft ? -8 : 0;
-            ctx.ellipse(visorX + 2, -3, 7, 5, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
+            if (!checkWallCollision(nextX, player.y, player.radius)) player.x = nextX;
+            if (!checkWallCollision(player.x, nextY, player.radius)) player.y = nextY;
 
-            ctx.restore();
+            // 미션 수행 판정
+            checkTaskInteraction();
         }
 
-        // 플레이어 이동 로직
-        function movePlayer() {
-            if (keys['arrowup'] || keys['w']) player.y = Math.max(player.radius, player.y - player.speed);
-            if (keys['arrowdown'] || keys['s']) player.y = Math.min(canvas.height - player.radius, player.y + player.speed);
-            if (keys['arrowleft'] || keys['a']) player.x = Math.max(player.radius, player.x - player.speed);
-            if (keys['arrowright'] || keys['d']) player.x = Math.min(canvas.width - player.radius, player.x + player.speed);
-        }
+        // 임포스터 AI 업데이트
+        function updateImposter() {
+            const distToPlayer = Math.hypot(player.x - imposter.x, player.y - imposter.y);
 
-        // 임포스터 AI 이동 로직 (플레이어를 추적)
-        function moveImposter() {
-            const dx = player.x - imposter.x;
-            const dy = player.y - imposter.y;
-            const angle = Math.atan2(dy, dx);
+            // 시야 범위 내 진입 시 추적
+            if (distToPlayer < 280) {
+                imposter.targetX = player.x;
+                imposter.targetY = player.y;
+            } else {
+                // 시야 밖 무작위 순찰
+                imposter.changeTargetTimer--;
+                if (imposter.changeTargetTimer <= 0) {
+                    imposter.targetX = 100 + Math.random() * 1200;
+                    imposter.targetY = 100 + Math.random() * 750;
+                    imposter.changeTargetTimer = 180 + Math.random() * 120;
+                }
+            }
 
-            imposter.x += Math.cos(angle) * imposter.speed;
-            imposter.y += Math.sin(angle) * imposter.speed;
+            const angle = Math.atan2(imposter.targetY - imposter.y, imposter.targetX - imposter.x);
+            let nextX = imposter.x + Math.cos(angle) * imposter.speed;
+            let nextY = imposter.y + Math.sin(angle) * imposter.speed;
 
-            // 충돌 감지 (임포스터가 플레이어를 잡았을 때)
-            const dist = Math.hypot(player.x - imposter.x, player.y - imposter.y);
-            if (dist < player.radius + imposter.radius - 5) {
+            imposter.facingLeft = Math.cos(angle) < 0;
+
+            if (!checkWallCollision(nextX, imposter.y, imposter.radius)) imposter.x = nextX;
+            if (!checkWallCollision(imposter.x, nextY, imposter.radius)) imposter.y = nextY;
+
+            // 임포스터 킬 감지
+            if (distToPlayer < player.radius + imposter.radius) {
                 endGame(false);
             }
         }
 
-        // 게임 종료 처리
-        function endGame(isWin) {
-            gameOver = true;
-            restartBtn.style.display = 'block';
-            if (isWin) {
-                statusMessage.textContent = "🎉 승리! 모든 미션을 완료했습니다!";
-                statusMessage.className = "win";
+        // 미션 상호작용
+        function checkTaskInteraction() {
+            let nearTask = null;
+
+            for (let t of tasks) {
+                if (!t.completed &&
+                    player.x > t.x - 20 && player.x < t.x + t.w + 20 &&
+                    player.y > t.y - 20 && player.y < t.y + t.h + 20) {
+                    nearTask = t;
+                    break;
+                }
+            }
+
+            if (nearTask) {
+                if (keys['e']) {
+                    activeTask = nearTask;
+                    interactionOverlay.style.display = 'flex';
+                    activeTask.progress += 0.8;
+                    interactionBar.style.width = Math.min(100, activeTask.progress) + '%';
+
+                    if (activeTask.progress >= 100) {
+                        activeTask.completed = true;
+                        resetTaskProgress();
+                        updateTaskBar();
+                    }
+                } else {
+                    resetTaskProgress();
+                }
             } else {
-                statusMessage.textContent = "💀 패배! 임포스터에게 처치당했습니다...";
-                statusMessage.className = "lose";
+                resetTaskProgress();
             }
         }
 
-        // 게임 리셋
-        function resetGame() {
-            player.x = 50;
-            player.y = 50;
-            imposter.x = 550;
-            imposter.y = 350;
-            tasks.forEach(task => task.completed = false);
-            gameOver = false;
-            statusMessage.textContent = "";
-            restartBtn.style.display = 'none';
-            taskBar.style.width = '0%';
-            gameLoop();
+        function resetTaskProgress() {
+            if (activeTask && !activeTask.completed) {
+                activeTask.progress = 0;
+            }
+            activeTask = null;
+            interactionOverlay.style.display = 'none';
+            interactionBar.style.width = '0%';
         }
 
-        // 메인 게임 루프
-        function gameLoop() {
+        function updateTaskBar() {
+            const completed = tasks.filter(t => t.completed).length;
+            const progress = (completed / tasks.length) * 100;
+            taskBar.style.width = progress + '%';
+
+            if (completed === tasks.length) {
+                endGame(true);
+            }
+        }
+
+        // 게임 종료 처리
+        function endGame(isVictory) {
+            gameActive = false;
+            overlayScreen.style.display = 'flex';
+            
+            if (isVictory) {
+                overlayTitle.textContent = "VICTORY";
+                overlayTitle.className = "victory";
+                overlaySub.textContent = "크루원이 모든 미션을 완료했습니다!";
+            } else {
+                overlayTitle.textContent = "DEFEAT";
+                overlayTitle.className = "defeat";
+                overlaySub.textContent = "임포스터에게 처치당했습니다...";
+            }
+            startBtn.textContent = "다시 플레이";
+        }
+
+        // 렌더링 - 어몽어스 캐릭터
+        function drawAmongUsCharacter(ctx, x, y, color, isFacingLeft) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            if (isFacingLeft) ctx.scale(-1, 1);
+
+            // 그림자
+            ctx.beginPath();
+            ctx.ellipse(0, 15, 14, 6, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fill();
+
+            // 백팩
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.roundRect(-18, -10, 8, 18, 4);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // 몸통
+            ctx.beginPath();
+            ctx.roundRect(-12, -18, 24, 30, [12, 12, 4, 4]);
+            ctx.fill();
+            ctx.stroke();
+
+            // 다리 분할
+            ctx.beginPath();
+            ctx.moveTo(-3, 6);
+            ctx.lineTo(-3, 12);
+            ctx.stroke();
+
+            // 바이저 (고글)
+            ctx.fillStyle = '#9bd0e8';
+            ctx.beginPath();
+            ctx.ellipse(4, -8, 9, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 바이저 하이라이트
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(6, -10, 3, 1.5, -Math.PI / 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // 메인 렌더링 루프
+        function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. 미션 구역 그리기
-            tasks.forEach((task, index) => {
-                ctx.beginPath();
-                ctx.arc(task.x, task.y, task.radius, 0, Math.PI * 2);
-                ctx.fillStyle = task.completed ? '#27ae60' : '#f1c40f'; // 완료 시 초록, 미완료 시 노랑
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#fff';
-                ctx.stroke();
+            // 카메라 시점 (플레이어 중심)
+            ctx.save();
+            ctx.translate(canvas.width / 2 - player.x, canvas.height / 2 - player.y);
 
-                // 미션 번호 텍스트
+            // 1. 바닥 타일 렌더링
+            ctx.fillStyle = '#1e1e2f';
+            ctx.fillRect(0, 0, 1500, 1000);
+
+            // 바닥 격자선
+            ctx.strokeStyle = '#282840';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < 1500; x += 50) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1000); ctx.stroke();
+            }
+            for (let y = 0; y < 1000; y += 50) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1500, y); ctx.stroke();
+            }
+
+            // 2. 미션 위치 렌더링
+            tasks.forEach(t => {
+                ctx.fillStyle = t.completed ? '#2ecc71' : '#f1c40f';
+                ctx.fillRect(t.x, t.y, t.w, t.h);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(t.x, t.y, t.w, t.h);
+
+                // 아이콘
                 ctx.fillStyle = '#000';
-                ctx.font = 'bold 12px Arial';
+                ctx.font = 'bold 16px Arial';
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(task.completed ? '✔' : 'Task ' + (index + 1), task.x, task.y);
+                ctx.fillText(t.completed ? '✓' : 'TASK', t.x + t.w / 2, t.y + t.h / 2 + 5);
             });
 
-            // 2. 캐릭터 업데이트 및 그리기
-            if (!gameOver) {
-                movePlayer();
-                moveImposter();
-            }
+            // 3. 벽 구조물 렌더링
+            ctx.fillStyle = '#2c3e50';
+            ctx.strokeStyle = '#1a252f';
+            ctx.lineWidth = 4;
+            walls.forEach(w => {
+                ctx.fillRect(w.x, w.y, w.w, w.h);
+                ctx.strokeRect(w.x, w.y, w.w, w.h);
+            });
 
-            drawCharacter(player.x, player.y, player.color);
-            drawCharacter(imposter.x, imposter.y, imposter.color);
+            // 4. 캐릭터 렌더링
+            drawAmongUsCharacter(ctx, imposter.x, imposter.y, imposter.color, imposter.facingLeft);
+            drawAmongUsCharacter(ctx, player.x, player.y, player.color, player.facingLeft);
 
-            // 게임 계속 진행
-            if (!gameOver) {
-                requestAnimationFrame(gameLoop);
-            }
+            ctx.restore();
+
+            // 5. 시야 제한 레이어 (Fog of War)
+            ctx.save();
+            ctx.fillStyle = 'rgba(5, 5, 10, 0.94)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 시야 구멍 뚫기
+            ctx.globalCompositeOperation = 'destination-out';
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 80,
+                canvas.width / 2, canvas.height / 2, 260
+            );
+            gradient.addColorStop(0, 'rgba(0,0,0,1)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 260, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
         }
 
-        // 게임 시작
-        gameLoop();
+        function gameLoop() {
+            if (gameActive) {
+                updatePlayer();
+                updateImposter();
+                render();
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+        }
     </script>
 </body>
 </html>
