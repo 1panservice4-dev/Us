@@ -1,416 +1,563 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
 
-<title>SPACE CREW ONLINE V2</title>
+<title>Among Us V3</title>
 
 <style>
 
-*{
-    box-sizing:border-box;
-    user-select:none;
-    -webkit-user-select:none;
+* {
+    box-sizing: border-box;
 }
 
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#080b10;
-    font-family:Arial,sans-serif;
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family:
+        Arial,
+        "Noto Sans KR",
+        sans-serif;
+    overflow: hidden;
 }
 
-button{
-    border:0;
-    border-radius:10px;
-    padding:12px 18px;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
+button,
+input,
+select {
+    font: inherit;
 }
 
-input,select{
-    width:100%;
-    padding:13px;
-    margin:6px 0;
-    border-radius:9px;
-    border:1px solid #444;
-    background:#11161d;
-    color:white;
-    font-size:16px;
+button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.hidden{
-    display:none!important;
+input,
+select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #555;
+    background: #222;
+    color: white;
 }
 
-/* =========================
-   MENU
-========================= */
+.hidden {
+    display: none !important;
+}
 
-#menu{
-    position:absolute;
-    inset:0;
-    z-index:1000;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+/* =====================
+   LOGIN
+===================== */
+
+#loginScreen {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     background:
-        radial-gradient(circle at center,#27364d,#0c1119 60%,#030509);
-    color:white;
+        radial-gradient(
+            circle at center,
+            #263238,
+            #080808 70%
+        );
 }
 
-.menuBox{
-    width:min(430px,92vw);
-    padding:25px;
-    border-radius:20px;
-    background:rgba(18,23,32,.96);
-    box-shadow:0 20px 60px rgba(0,0,0,.6);
+.loginBox {
+    width: min(92vw, 420px);
+    padding: 30px;
+
+    background: #1c1c1c;
+    border-radius: 20px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.6);
+
+    text-align: center;
 }
 
-.menuBox h1{
-    text-align:center;
-    margin:0 0 10px;
-    font-size:36px;
+.loginBox h1 {
+    font-size: 42px;
+    margin: 0 0 20px;
 }
 
-.menuBox p{
-    text-align:center;
-    color:#aaa;
+.loginBox input {
+    width: 100%;
+    margin: 6px 0;
 }
 
-.menuBtn{
-    width:100%;
-    margin-top:8px;
-    background:#2980b9;
-    color:white;
+.loginBox button {
+    width: 100%;
+    margin-top: 8px;
 }
 
-.menuBtn:hover{
-    filter:brightness(1.2);
+#createBtn {
+    background: #43a047;
+    color: white;
 }
 
-#lobby{
-    display:none;
-    text-align:center;
+#joinBtn {
+    background: #1e88e5;
+    color: white;
 }
 
-.roomCode{
-    font-size:28px;
-    letter-spacing:5px;
-    color:#f1c40f;
-    margin:15px;
+/* =====================
+   LOBBY
+===================== */
+
+#lobbyScreen {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.playerLobby{
-    background:#202733;
-    padding:8px;
-    margin:5px 0;
-    border-radius:8px;
+.lobby {
+    width: min(95vw, 700px);
+    padding: 25px;
+
+    background: #1b1b1b;
+    border-radius: 20px;
 }
 
-/* =========================
+.roomCode {
+    text-align: center;
+    font-size: 42px;
+    letter-spacing: 8px;
+    color: #ffd54f;
+    margin: 10px 0 25px;
+}
+
+.players {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(130px, 1fr));
+
+    gap: 10px;
+}
+
+.playerCard {
+    padding: 12px;
+    border-radius: 12px;
+    background: #292929;
+    text-align: center;
+}
+
+.playerIcon {
+    width: 40px;
+    height: 40px;
+    margin: auto auto 8px;
+
+    border-radius: 50%;
+}
+
+.settings {
+    margin-top: 20px;
+    display: grid;
+    gap: 8px;
+}
+
+#startBtn {
+    width: 100%;
+    margin-top: 20px;
+    background: #e53935;
+    color: white;
+}
+
+/* =====================
    GAME
-========================= */
+===================== */
 
-#game{
-    position:absolute;
-    inset:0;
-    display:none;
-    background:#10151c;
+#gameScreen {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+
+    background: #101010;
 }
 
-#canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
+#gameCanvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: min(100vw, 1000px);
+    height: min(100vh, 700px);
+
+    background: #263238;
+
+    border: 3px solid #555;
 }
 
-/* =========================
-   TOP UI
-========================= */
+#topUI {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
 
-#topUI{
-    position:absolute;
-    top:10px;
-    left:10px;
-    right:10px;
-    z-index:20;
-    display:flex;
-    justify-content:space-between;
-    pointer-events:none;
+    display: flex;
+    justify-content: space-between;
+
+    pointer-events: none;
 }
 
-.uiBox{
-    background:rgba(0,0,0,.68);
-    color:white;
-    padding:9px 12px;
-    border-radius:10px;
-    margin-bottom:5px;
+.uiBox {
+    background: rgba(0,0,0,.65);
+    padding: 10px 14px;
+    border-radius: 10px;
 }
 
-#roleText{
-    font-weight:bold;
+#roleText {
+    font-weight: bold;
 }
 
-#taskBar{
-    width:250px;
-    height:12px;
-    background:#222;
-    border-radius:10px;
-    overflow:hidden;
+#taskBar {
+    position: absolute;
+
+    left: 50%;
+    top: 15px;
+
+    transform: translateX(-50%);
+
+    width: min(300px, 50vw);
+    height: 20px;
+
+    border: 2px solid white;
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #222;
 }
 
-#taskProgress{
-    height:100%;
-    width:0%;
-    background:#2ecc71;
+#taskFill {
+    height: 100%;
+    width: 0%;
+
+    background: #4caf50;
 }
 
-/* =========================
-   ACTION BUTTONS
-========================= */
-
-.actionBtn{
-    position:absolute;
-    z-index:30;
-    width:75px;
-    height:75px;
-    border-radius:50%;
-    color:white;
-    font-size:13px;
-}
-
-#killBtn{
-    right:20px;
-    bottom:25px;
-    background:#c0392b;
-    display:none;
-}
-
-#reportBtn{
-    right:110px;
-    bottom:25px;
-    background:#f39c12;
-    display:none;
-}
-
-#meetingBtn{
-    position:absolute;
-    z-index:30;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:25px;
-    background:#e74c3c;
-    color:white;
-}
-
-/* =========================
+/* =====================
    CONTROLS
-========================= */
+===================== */
 
-#controls{
-    position:absolute;
-    z-index:30;
-    left:20px;
-    bottom:20px;
-    width:155px;
-    height:155px;
+#mobileControls {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+
+    width: 160px;
+    height: 160px;
 }
 
-.moveBtn{
-    position:absolute;
-    width:50px;
-    height:50px;
-    padding:0;
-    background:rgba(255,255,255,.25);
-    color:white;
-    font-size:22px;
+.moveBtn {
+    position: absolute;
+
+    width: 55px;
+    height: 55px;
+
+    background: rgba(255,255,255,.25);
+    color: white;
+
+    border-radius: 50%;
+
+    font-size: 22px;
+
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-#up{
-    left:52px;
-    top:0;
+#upBtn {
+    left: 52px;
+    top: 0;
 }
 
-#down{
-    left:52px;
-    bottom:0;
+#downBtn {
+    left: 52px;
+    bottom: 0;
 }
 
-#left{
-    left:0;
-    top:52px;
+#leftBtn {
+    left: 0;
+    top: 52px;
 }
 
-#right{
-    right:0;
-    top:52px;
+#rightBtn {
+    right: 0;
+    top: 52px;
 }
 
-/* =========================
+/* =====================
+   ACTIONS
+===================== */
+
+#actions {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.actionBtn {
+    width: 90px;
+    height: 55px;
+
+    background: #333;
+    color: white;
+}
+
+#killBtn {
+    background: #c62828;
+}
+
+#reportBtn {
+    background: #f9a825;
+}
+
+#meetingBtn {
+    background: #1565c0;
+}
+
+#taskBtn {
+    background: #2e7d32;
+}
+
+/* =====================
    CHAT
-========================= */
+===================== */
 
-#chat{
-    position:absolute;
-    left:10px;
-    bottom:10px;
-    width:270px;
-    height:150px;
-    z-index:40;
-    background:rgba(0,0,0,.72);
-    border-radius:12px;
-    color:white;
-    display:flex;
-    flex-direction:column;
+#chat {
+    position: absolute;
+
+    left: 10px;
+    bottom: 10px;
+
+    width: min(300px, 45vw);
 }
 
-#messages{
-    flex:1;
-    overflow-y:auto;
-    padding:8px;
-    font-size:13px;
+#chatMessages {
+    height: 130px;
+
+    overflow-y: auto;
+
+    padding: 8px;
+
+    background: rgba(0,0,0,.55);
+
+    border-radius: 10px;
+
+    margin-bottom: 5px;
+
+    font-size: 13px;
 }
 
-#chatInput{
-    margin:5px;
-    width:calc(100% - 10px);
+.chatInput {
+    display: flex;
+    gap: 5px;
 }
 
-/* =========================
-   MINIMAP
-========================= */
-
-#minimap{
-    position:absolute;
-    right:10px;
-    top:105px;
-    width:150px;
-    height:100px;
-    background:rgba(0,0,0,.7);
-    border:2px solid #555;
-    border-radius:8px;
-    z-index:20;
+.chatInput input {
+    min-width: 0;
+    flex: 1;
 }
 
-#miniCanvas{
-    width:100%;
-    height:100%;
+.chatInput button {
+    padding: 8px 12px;
 }
 
-/* =========================
+/* =====================
    MEETING
-========================= */
+===================== */
 
-#meeting{
-    position:absolute;
-    inset:0;
-    z-index:500;
-    background:rgba(8,10,15,.97);
-    color:white;
-    display:none;
-    overflow:auto;
-    padding:20px;
+#meetingScreen {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(10,10,10,.96);
+
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#meeting h1{
-    text-align:center;
+.meetingBox {
+    width: min(95vw, 650px);
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: #202020;
+    border-radius: 20px;
+
+    padding: 20px;
 }
 
-#meetingTimer{
-    text-align:center;
-    font-size:22px;
-    color:#f1c40f;
+.meetingTitle {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 15px;
 }
 
-.voteGrid{
-    max-width:700px;
-    margin:20px auto;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-    gap:10px;
+.voteGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(130px, 1fr));
+
+    gap: 10px;
 }
 
-.voteCard{
-    background:#242b36;
-    border-radius:12px;
-    padding:15px;
-    text-align:center;
-    cursor:pointer;
+.voteBtn {
+    background: #333;
+    color: white;
 }
 
-.voteCard:hover{
-    background:#3b4654;
+.voteBtn.selected {
+    outline: 4px solid #42a5f5;
 }
 
-.voteCard.dead{
-    opacity:.35;
-    cursor:not-allowed;
+#skipVote {
+    width: 100%;
+    margin-top: 10px;
+
+    background: #555;
+    color: white;
 }
 
-#voteResult{
-    text-align:center;
-    font-size:20px;
-    margin:20px;
+/* =====================
+   TASK
+===================== */
+
+#taskPanel {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 50;
+
+    background: rgba(0,0,0,.8);
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
 }
 
-/* =========================
+.taskBox {
+    width: min(90vw, 450px);
+
+    background: #222;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    text-align: center;
+}
+
+.taskButton {
+    display: block;
+
+    width: 100%;
+
+    margin: 8px 0;
+
+    background: #2e7d32;
+
+    color: white;
+}
+
+/* =====================
    GAME OVER
-========================= */
+===================== */
 
-#gameOver{
-    position:absolute;
-    inset:0;
-    z-index:1000;
-    background:rgba(0,0,0,.94);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    text-align:center;
+#gameOver {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 200;
+
+    background:
+        rgba(0,0,0,.92);
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
 }
 
-#gameOver h1{
-    font-size:45px;
+.gameOverBox {
+    padding: 40px;
 }
 
-#gameOver button{
-    background:#3498db;
-    color:white;
+.gameOverBox h1 {
+    font-size: 48px;
 }
 
-/* =========================
+#backLobbyBtn {
+    background: #1976d2;
+    color: white;
+}
+
+/* =====================
    MOBILE
-========================= */
+===================== */
 
-@media(max-width:600px){
+@media (min-width: 800px) {
 
-    #chat{
-        width:220px;
-        height:125px;
+    #mobileControls {
+        opacity: .35;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .loginBox h1 {
+        font-size: 32px;
     }
 
-    #minimap{
-        width:120px;
-        height:80px;
-        top:100px;
+    .roomCode {
+        font-size: 30px;
     }
 
-    #taskBar{
-        width:150px;
+    #chat {
+        width: 45vw;
     }
 
-    #meetingBtn{
-        bottom:15px;
+    #chatMessages {
+        height: 90px;
     }
 
+    .actionBtn {
+        width: 75px;
+        height: 48px;
+    }
 }
 
 </style>
@@ -418,116 +565,37 @@ input,select{
 
 <body>
 
+<!-- =====================
+     LOGIN
+===================== -->
 
-<!-- ======================================================
-     MENU
-======================================================= -->
+<div id="loginScreen">
 
-<div id="menu">
+    <div class="loginBox">
 
-    <div class="menuBox" id="mainMenu">
-
-        <h1>🚀 SPACE CREW</h1>
-
-        <p>온라인 어몽어스 스타일 게임</p>
+        <h1>Among Us</h1>
 
         <input
             id="nameInput"
-            maxlength="12"
+            maxlength="16"
             placeholder="닉네임">
 
-        <button
-            class="menuBtn"
-            onclick="createRoom()">
-            🏠 방 만들기
+        <button id="createBtn">
+            방 만들기
         </button>
 
         <input
             id="roomInput"
-            maxlength="30"
-            placeholder="방 코드">
+            maxlength="6"
+            inputmode="numeric"
+            placeholder="6자리 방 코드">
 
-        <button
-            class="menuBtn"
-            onclick="joinRoom()">
-            🚀 방 참가
+        <button id="joinBtn">
+            방 참가
         </button>
 
-        <p id="status">
-            연결 준비 중...
-        </p>
-
-    </div>
-
-
-    <div class="menuBox" id="lobby">
-
-        <h1>🛰️ 대기실</h1>
-
-        <div>
-            방 코드
-        </div>
-
-        <div
-            class="roomCode"
-            id="lobbyCode">
-            ----
-        </div>
-
-        <div id="lobbyPlayers"></div>
-
-        <div id="hostSettings">
-
-            <label>임포스터 수</label>
-
-            <select id="imposterCount">
-
-                <option value="1">
-                    1명
-                </option>
-
-                <option value="2">
-                    2명
-                </option>
-
-                <option value="3">
-                    3명
-                </option>
-
-            </select>
-
-            <label>킬 쿨타임</label>
-
-            <select id="killCooldown">
-
-                <option value="10">
-                    10초
-                </option>
-
-                <option value="20" selected>
-                    20초
-                </option>
-
-                <option value="30">
-                    30초
-                </option>
-
-                <option value="40">
-                    40초
-                </option>
-
-            </select>
-
-            <button
-                class="menuBtn"
-                onclick="startOnlineGame()">
-                ▶ 게임 시작
-            </button>
-
-        </div>
-
-        <p id="lobbyMessage">
-            방장이 게임을 시작하면 시작합니다.
+        <p id="connectionStatus">
+            서버 연결 중...
         </p>
 
     </div>
@@ -535,1604 +603,1252 @@ input,select{
 </div>
 
 
-<!-- ======================================================
+<!-- =====================
+     LOBBY
+===================== -->
+
+<div id="lobbyScreen" class="hidden">
+
+    <div class="lobby">
+
+        <h2>대기실</h2>
+
+        <div class="roomCode" id="roomCode">
+            ------
+        </div>
+
+        <div>
+            친구에게 위의 방 코드를 알려주세요.
+        </div>
+
+        <h3>플레이어</h3>
+
+        <div
+            id="playerList"
+            class="players">
+        </div>
+
+        <div class="settings">
+
+            <label>
+                임포스터 수
+                <select id="impostorSetting">
+                    <option value="1">1명</option>
+                    <option value="2">2명</option>
+                    <option value="3">3명</option>
+                </select>
+            </label>
+
+            <label>
+                킬 쿨다운
+                <select id="cooldownSetting">
+                    <option value="10">10초</option>
+                    <option value="20">20초</option>
+                    <option value="25" selected>25초</option>
+                    <option value="30">30초</option>
+                    <option value="45">45초</option>
+                    <option value="60">60초</option>
+                </select>
+            </label>
+
+            <label>
+                회의 시간
+                <select id="meetingSetting">
+                    <option value="15">15초</option>
+                    <option value="30" selected>30초</option>
+                    <option value="45">45초</option>
+                    <option value="60">60초</option>
+                    <option value="90">90초</option>
+                </select>
+            </label>
+
+        </div>
+
+        <button id="startBtn">
+            게임 시작
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================
      GAME
-======================================================= -->
+===================== -->
 
-<div id="game">
+<div id="gameScreen" class="hidden">
 
-    <canvas id="canvas"></canvas>
+    <canvas
+        id="gameCanvas"
+        width="1000"
+        height="700">
+    </canvas>
 
     <div id="topUI">
 
-        <div>
-
-            <div class="uiBox">
-                방:
-                <b id="roomCodeText"></b>
-            </div>
-
-            <div
-                class="uiBox"
-                id="roleText">
-                역할 확인 중
-            </div>
-
+        <div class="uiBox">
+            <span id="roleText">
+                시민
+            </span>
         </div>
 
-        <div>
-
-            <div
-                class="uiBox"
-                id="taskText">
-                전체 미션
-            </div>
-
-            <div class="uiBox">
-
-                <div id="taskBar">
-                    <div id="taskProgress"></div>
-                </div>
-
-            </div>
-
+        <div class="uiBox">
+            <span id="playerCount">
+                0
+            </span>
+            명
         </div>
 
     </div>
 
-
-    <div id="minimap">
-        <canvas id="miniCanvas"></canvas>
+    <div id="taskBar">
+        <div id="taskFill"></div>
     </div>
 
 
-    <button
-        id="meetingBtn"
-        onclick="callEmergency()">
-        🚨 긴급회의
-    </button>
+    <!-- 모바일 이동 -->
 
+    <div id="mobileControls">
 
-    <button
-        id="killBtn"
-        class="actionBtn"
-        onclick="killNearest()">
-        🔪<br>KILL
-    </button>
-
-
-    <button
-        id="reportBtn"
-        class="actionBtn"
-        onclick="reportBody()">
-        🚨<br>REPORT
-    </button>
-
-
-    <div id="controls">
-
-        <button
-            id="up"
-            class="moveBtn">
+        <button class="moveBtn" id="upBtn">
             ▲
         </button>
 
-        <button
-            id="down"
-            class="moveBtn">
+        <button class="moveBtn" id="downBtn">
             ▼
         </button>
 
-        <button
-            id="left"
-            class="moveBtn">
+        <button class="moveBtn" id="leftBtn">
             ◀
         </button>
 
-        <button
-            id="right"
-            class="moveBtn">
+        <button class="moveBtn" id="rightBtn">
             ▶
         </button>
 
     </div>
 
 
-    <div id="chat">
+    <!-- 액션 -->
 
-        <div id="messages"></div>
-
-        <input
-            id="chatInput"
-            placeholder="채팅 후 Enter"
-            maxlength="100">
-
-    </div>
-
-</div>
-
-
-<!-- ======================================================
-     MEETING
-======================================================= -->
-
-<div id="meeting">
-
-    <h1>🚨 긴급 회의</h1>
-
-    <div id="meetingReason">
-        회의가 시작되었습니다.
-    </div>
-
-    <div id="meetingTimer">
-        30
-    </div>
-
-    <div
-        class="voteGrid"
-        id="voteGrid">
-    </div>
-
-    <div id="voteResult">
-        투표할 사람을 선택하세요.
-    </div>
-
-</div>
-
-
-<!-- ======================================================
-     GAME OVER
-======================================================= -->
-
-<div id="gameOver">
-
-    <div>
-
-        <h1 id="gameOverTitle">
-            GAME OVER
-        </h1>
-
-        <p id="gameOverText"></p>
+    <div id="actions">
 
         <button
-            onclick="location.reload()">
-            🔄 다시 하기
+            class="actionBtn"
+            id="killBtn">
+            KILL
+        </button>
+
+        <button
+            class="actionBtn"
+            id="reportBtn">
+            REPORT
+        </button>
+
+        <button
+            class="actionBtn"
+            id="meetingBtn">
+            MEETING
+        </button>
+
+        <button
+            class="actionBtn"
+            id="taskBtn">
+            TASK
         </button>
 
     </div>
 
+
+    <!-- 채팅 -->
+
+    <div id="chat">
+
+        <div id="chatMessages"></div>
+
+        <div class="chatInput">
+
+            <input
+                id="chatInput"
+                placeholder="채팅">
+
+            <button id="chatSend">
+                전송
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- 회의 -->
+
+    <div id="meetingScreen" class="hidden">
+
+        <div class="meetingBox">
+
+            <div class="meetingTitle">
+                회의
+            </div>
+
+            <div id="meetingTimer">
+                30
+            </div>
+
+            <div
+                id="voteGrid"
+                class="voteGrid">
+            </div>
+
+            <button id="skipVote">
+                건너뛰기
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- 미션 -->
+
+    <div id="taskPanel" class="hidden">
+
+        <div class="taskBox">
+
+            <h2>
+                미션
+            </h2>
+
+            <p>
+                완료할 미션을 선택하세요.
+            </p>
+
+            <button
+                class="taskButton"
+                data-task="0">
+                배선 고치기
+            </button>
+
+            <button
+                class="taskButton"
+                data-task="1">
+                데이터 업로드
+            </button>
+
+            <button
+                class="taskButton"
+                data-task="2">
+                엔진 점검
+            </button>
+
+            <button
+                id="closeTask">
+                닫기
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- 게임 종료 -->
+
+    <div id="gameOver" class="hidden">
+
+        <div class="gameOverBox">
+
+            <h1 id="winnerText">
+                시민 승리
+            </h1>
+
+            <div id="finalPlayers"></div>
+
+            <button id="backLobbyBtn">
+                대기실로
+            </button>
+
+        </div>
+
+    </div>
+
 </div>
 
 
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-
 <script>
 
-/* ======================================================
-   GLOBAL
-======================================================= */
+const $ = id =>
+    document.getElementById(id);
+
+
+/* =====================
+   SERVER
+===================== */
+
+const protocol =
+    location.protocol === "https:"
+        ? "wss:"
+        : "ws:";
+
+const socket =
+    new WebSocket(
+        `${protocol}//${location.host}`
+    );
+
+
+let myId = null;
+let myRole = null;
+let myColor = "#e53935";
+let roomCode = null;
+let hostId = null;
+
+let players = [];
+
+let gameStarted = false;
+
+let selectedTarget = null;
+
+let keys = {};
+
+let lastMove = 0;
+
+let meetingTimer = null;
+
+let myTasks = [false, false, false];
+
+let taskTotal = 0;
+let taskDone = 0;
+
+
+/* =====================
+   CANVAS
+===================== */
 
 const canvas =
-    document.getElementById("canvas");
+    $("gameCanvas");
 
 const ctx =
     canvas.getContext("2d");
 
-const miniCanvas =
-    document.getElementById("miniCanvas");
 
-const miniCtx =
-    miniCanvas.getContext("2d");
+/* =====================
+   SOCKET
+===================== */
 
-let W =
-    window.innerWidth;
+function send(type, data = {}) {
 
-let H =
-    window.innerHeight;
+    if (
+        socket.readyState !==
+        WebSocket.OPEN
+    ) return;
 
-canvas.width = W;
-canvas.height = H;
+    socket.send(
+        JSON.stringify({
+            type,
+            ...data
+        })
+    );
+}
 
-miniCanvas.width = 150;
-miniCanvas.height = 100;
 
+socket.addEventListener(
+    "open",
+    () => {
 
-window.addEventListener(
-    "resize",
-    ()=>{
-        W = window.innerWidth;
-        H = window.innerHeight;
+        $("connectionStatus")
+            .textContent =
+            "서버 연결됨";
 
-        canvas.width = W;
-        canvas.height = H;
     }
 );
 
 
-/* ======================================================
-   NETWORK
-======================================================= */
+socket.addEventListener(
+    "close",
+    () => {
 
-let peer = null;
+        $("connectionStatus")
+            .textContent =
+            "서버 연결 끊김";
 
-let myId = "";
-
-let myName = "";
-
-let roomCode = "";
-
-let isHost = false;
-
-let connections = {};
-
-let players = {};
-
-let gameStarted = false;
-
-let rolesAssigned = false;
-
-
-/* ======================================================
-   SETTINGS
-======================================================= */
-
-let impostersWanted = 1;
-
-let killCooldown = 20;
-
-let lastKillTime = 0;
-
-let meetingActive = false;
-
-let meetingVotes = {};
-
-let meetingTimer = 30;
-
-let meetingInterval = null;
-
-
-/* ======================================================
-   GAME
-======================================================= */
-
-const MAP_W = 1600;
-
-const MAP_H = 1000;
-
-const PLAYER_SPEED = 3;
-
-const KILL_DISTANCE = 75;
-
-const REPORT_DISTANCE = 80;
-
-let bodies = [];
-
-
-/* ======================================================
-   TASKS
-======================================================= */
-
-const tasks = [
-
-    {
-        x:-600,
-        y:-330,
-        name:"전기실"
-    },
-
-    {
-        x:-100,
-        y:-330,
-        name:"상부엔진"
-    },
-
-    {
-        x:500,
-        y:-330,
-        name:"통신실"
-    },
-
-    {
-        x:-600,
-        y:280,
-        name:"의무실"
-    },
-
-    {
-        x:0,
-        y:280,
-        name:"발전실"
-    },
-
-    {
-        x:520,
-        y:280,
-        name:"하부엔진"
     }
-
-];
-
-
-/* ======================================================
-   WALLS
-======================================================= */
-
-const walls = [
-
-    {
-        x:-800,
-        y:-500,
-        w:1600,
-        h:35
-    },
-
-    {
-        x:-800,
-        y:465,
-        w:1600,
-        h:35
-    },
-
-    {
-        x:-800,
-        y:-500,
-        w:35,
-        h:1000
-    },
-
-    {
-        x:765,
-        y:-500,
-        w:35,
-        h:1000
-    },
-
-    /* 중앙 벽 */
-
-    {
-        x:-30,
-        y:-450,
-        w:60,
-        h:180
-    },
-
-    {
-        x:-30,
-        y:270,
-        w:60,
-        h:180
-    }
-
-];
+);
 
 
-/* ======================================================
-   COLORS
-======================================================= */
+socket.addEventListener(
+    "message",
+    event => {
 
-const colors = [
+        let msg;
 
-    "#e74c3c",
-    "#3498db",
-    "#2ecc71",
-    "#f1c40f",
-    "#9b59b6",
-    "#e67e22",
-    "#1abc9c",
-    "#ecf0f1",
-    "#ff69b4",
-    "#95a5a6"
-
-];
-
-
-/* ======================================================
-   CREATE PLAYER
-======================================================= */
-
-function createPlayer(
-    id,
-    name
-){
-
-    return {
-
-        id:id,
-
-        name:name,
-
-        x:0,
-
-        y:0,
-
-        color:
-            colors[
-                Object.keys(players).length %
-                colors.length
-            ],
-
-        alive:true,
-
-        role:"crew",
-
-        tasks:[],
-
-        kills:0
-
-    };
-
-}
-
-
-/* ======================================================
-   CREATE ROOM
-======================================================= */
-
-function createRoom(){
-
-    myName =
-        document
-        .getElementById("nameInput")
-        .value
-        .trim();
-
-    if(!myName){
-
-        alert("닉네임을 입력하세요.");
-
-        return;
-    }
-
-    isHost = true;
-
-    peer =
-        new Peer({
-            debug:1
-        });
-
-
-    peer.on(
-        "open",
-        id=>{
-
-            myId = id;
-
-            roomCode = id;
-
-            document
-            .getElementById("status")
-            .innerText =
-                "방 생성 완료";
-
-            showLobby();
-
-            players[myId] =
-                createPlayer(
-                    myId,
-                    myName
-                );
-
-            updateLobby();
-
+        try {
+            msg = JSON.parse(
+                event.data
+            );
+        } catch {
+            return;
         }
-    );
+
+        handleServerMessage(msg);
+    }
+);
 
 
-    peer.on(
-        "connection",
-        conn=>{
+/* =====================
+   SERVER MESSAGES
+===================== */
 
-            setupConnection(conn);
+function handleServerMessage(msg) {
 
-        }
-    );
+    switch (msg.type) {
+
+        case "error":
+
+            alert(msg.message);
+
+            break;
 
 
-    peer.on(
-        "error",
-        err=>{
+        case "room_created":
 
-            console.log(err);
+            roomCode =
+                msg.code;
 
-            alert(
-                "네트워크 오류: "+
-                err.type
+            myId =
+                msg.playerId;
+
+            myColor =
+                msg.color;
+
+            hostId =
+                myId;
+
+            showLobby(
+                msg.settings
             );
 
-        }
-    );
-
-}
+            break;
 
 
-/* ======================================================
-   JOIN ROOM
-======================================================= */
+        case "joined":
 
-function joinRoom(){
+            roomCode =
+                msg.code;
 
-    myName =
-        document
-        .getElementById("nameInput")
-        .value
-        .trim();
+            myId =
+                msg.playerId;
 
-    roomCode =
-        document
-        .getElementById("roomInput")
-        .value
-        .trim();
+            myColor =
+                msg.color;
 
-    if(!myName){
-
-        alert("닉네임을 입력하세요.");
-
-        return;
-    }
-
-    if(!roomCode){
-
-        alert("방 코드를 입력하세요.");
-
-        return;
-    }
-
-    isHost = false;
-
-    peer =
-        new Peer({
-            debug:1
-        });
-
-
-    peer.on(
-        "open",
-        id=>{
-
-            myId = id;
-
-            const conn =
-                peer.connect(
-                    roomCode
-                );
-
-            setupConnection(conn);
-
-        }
-    );
-
-
-    peer.on(
-        "error",
-        err=>{
-
-            alert(
-                "방 연결 실패: "+
-                err.type
+            showLobby(
+                msg.settings
             );
 
-        }
-    );
-
-}
+            break;
 
 
-/* ======================================================
-   CONNECTION
-======================================================= */
+        case "lobby":
 
-function setupConnection(conn){
+            roomCode =
+                msg.code;
 
-    connections[conn.peer] =
-        conn;
+            hostId =
+                msg.hostId;
 
+            players =
+                msg.players || [];
 
-    conn.on(
-        "open",
-        ()=>{
-
-            conn.send({
-
-                type:"join",
-
-                player:
-                    createPlayer(
-                        myId,
-                        myName
-                    )
-
-            });
-
-        }
-    );
-
-
-    conn.on(
-        "data",
-        data=>{
-
-            receiveData(
-                data,
-                conn
+            updateLobby(
+                msg.settings
             );
 
-        }
-    );
+            break;
 
 
-    conn.on(
-        "close",
-        ()=>{
+        case "settings":
 
-            const id =
-                conn.peer;
+            updateLobby(
+                msg.settings
+            );
 
-            if(players[id]){
+            break;
 
-                addMessage(
+
+        case "game_started":
+
+            startLocalGame(
+                msg
+            );
+
+            break;
+
+
+        case "positions":
+
+            for (
+                const p
+                of msg.players
+            ) {
+
+                const local =
+                    players.find(
+                        x => x.id === p.id
+                    );
+
+                if (local) {
+
+                    local.x = p.x;
+                    local.y = p.y;
+                    local.alive = p.alive;
+
+                }
+            }
+
+            break;
+
+
+        case "player_killed":
+
+            for (
+                const p
+                of players
+            ) {
+
+                if (
+                    p.id ===
+                    msg.targetId
+                ) {
+                    p.alive = false;
+                }
+            }
+
+            break;
+
+
+        case "meeting_started":
+
+            openMeeting(
+                msg
+            );
+
+            break;
+
+
+        case "vote_registered":
+
+            break;
+
+
+        case "meeting_result":
+
+            closeMeeting();
+
+            if (
+                msg.ejected
+            ) {
+
+                const p =
+                    players.find(
+                        x =>
+                            x.id ===
+                            msg.ejected.id
+                    );
+
+                if (p) {
+                    p.alive = false;
+                }
+
+                addChat(
                     "SYSTEM",
-                    players[id].name+
-                    " 님이 나갔습니다."
+                    `${msg.ejected.name} 님이 퇴출되었습니다.`
                 );
-
-                delete players[id];
-
-                updateLobby();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* ======================================================
-   DATA
-======================================================= */
-
-function receiveData(
-    data,
-    conn
-){
-
-    if(!data || !data.type)
-        return;
-
-
-    switch(data.type){
-
-        case "join":
-
-            if(isHost){
-
-                players[
-                    data.player.id
-                ] =
-                    data.player;
-
-                broadcast({
-
-                    type:"players",
-
-                    players:
-                        Object.values(players)
-
-                });
-
-                updateLobby();
-
             }
 
             break;
 
 
-        case "players":
+        case "task_done":
 
-            data.players.forEach(
-                p=>{
-                    players[p.id] = p;
-                }
-            );
+            myTasks[
+                msg.index
+            ] = true;
 
-            if(!gameStarted){
+            taskDone =
+                msg.completed;
 
-                showLobby();
+            taskTotal =
+                msg.total;
 
-                updateLobby();
-
-            }
+            updateTaskBar();
 
             break;
 
 
-        case "start":
+        case "task_progress":
 
-            impostersWanted =
-                data.imposters;
+            taskDone =
+                msg.done;
 
-            killCooldown =
-                data.cooldown;
+            taskTotal =
+                msg.total;
 
-            Object.values(
-                data.players
-            ).forEach(
-                p=>{
-                    players[p.id] = p;
-                }
-            );
-
-            myName =
-                players[myId]?.name ||
-                myName;
-
-            startGame();
-
-            break;
-
-
-        case "move":
-
-            if(players[data.id]){
-
-                players[data.id].x =
-                    data.x;
-
-                players[data.id].y =
-                    data.y;
-
-            }
-
-            break;
-
-
-        case "player":
-
-            players[
-                data.player.id
-            ] =
-                data.player;
-
-            updateTaskUI();
-
-            break;
-
-
-        case "body":
-
-            bodies =
-                data.bodies;
+            updateTaskBar();
 
             break;
 
 
         case "chat":
 
-            addMessage(
-                data.name,
-                data.message
+            addChat(
+                msg.player,
+                msg.text,
+                msg.color
             );
 
             break;
 
 
-        case "meeting":
-
-            startMeeting(
-                data.reason
-            );
-
-            break;
-
-
-        case "vote":
-
-            if(isHost){
-
-                processVote(
-                    data.voter,
-                    data.target
-                );
-
-            }
-
-            break;
-
-
-        case "voteResult":
-
-            finishMeetingDisplay(
-                data.target,
-                data.ejectedRole
-            );
-
-            break;
-
-
-        case "gameOver":
+        case "game_over":
 
             showGameOver(
-                data.winner
+                msg
             );
 
             break;
 
     }
-
 }
 
 
-/* ======================================================
+/* =====================
+   LOGIN
+===================== */
+
+$("createBtn")
+    .onclick = () => {
+
+        const name =
+            $("nameInput")
+                .value
+                .trim();
+
+        if (!name) {
+
+            alert(
+                "닉네임을 입력하세요."
+            );
+
+            return;
+        }
+
+        send(
+            "create",
+            { name }
+        );
+    };
+
+
+$("joinBtn")
+    .onclick = () => {
+
+        const name =
+            $("nameInput")
+                .value
+                .trim();
+
+        const code =
+            $("roomInput")
+                .value
+                .trim();
+
+        if (!name) {
+
+            alert(
+                "닉네임을 입력하세요."
+            );
+
+            return;
+        }
+
+        if (!/^\d{6}$/.test(code)) {
+
+            alert(
+                "6자리 방 코드를 입력하세요."
+            );
+
+            return;
+        }
+
+        send(
+            "join",
+            {
+                name,
+                code
+            }
+        );
+    };
+
+
+/* =====================
    LOBBY
-======================================================= */
+===================== */
 
-function showLobby(){
+function showLobby(settings) {
 
-    document
-    .getElementById("mainMenu")
-    .style.display =
-        "none";
+    $("loginScreen")
+        .classList.add("hidden");
 
-    document
-    .getElementById("lobby")
-    .style.display =
-        "block";
+    $("lobbyScreen")
+        .classList.remove("hidden");
 
-    document
-    .getElementById("lobbyCode")
-    .innerText =
-        roomCode.substring(0,8);
+    $("gameScreen")
+        .classList.add("hidden");
 
-    if(!isHost){
+    $("roomCode")
+        .textContent =
+        roomCode;
 
-        document
-        .getElementById("hostSettings")
-        .style.display =
-            "none";
-
-    }
-
+    updateLobby(
+        settings
+    );
 }
 
 
-function updateLobby(){
+function updateLobby(settings) {
 
-    const box =
-        document
-        .getElementById("lobbyPlayers");
+    if (!settings) return;
 
-    box.innerHTML = "";
+    $("roomCode")
+        .textContent =
+        roomCode || "------";
 
-    Object.values(players)
-    .forEach(
-        p=>{
+    const list =
+        $("playerList");
 
-            const div =
-                document
-                .createElement("div");
+    list.innerHTML = "";
 
-            div.className =
-                "playerLobby";
+    for (
+        const p
+        of players
+    ) {
 
-            div.innerText =
-                "🧑‍🚀 "+
-                p.name+
-                (
-                    p.id === myId
-                    ? " (나)"
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "playerCard";
+
+        div.innerHTML = `
+            <div
+                class="playerIcon"
+                style="background:${p.color}">
+            </div>
+
+            <b>${escapeHtml(p.name)}</b>
+
+            ${
+                p.id === hostId
+                    ? "<br>👑 방장"
                     : ""
-                );
+            }
+        `;
 
-            box.appendChild(div);
+        list.appendChild(div);
+    }
 
+
+    $("impostorSetting")
+        .value =
+        settings.impostors;
+
+
+    $("cooldownSetting")
+        .value =
+        settings.killCooldown;
+
+
+    $("meetingSetting")
+        .value =
+        settings.meetingTime;
+
+
+    const isHost =
+        myId === hostId;
+
+    $("startBtn")
+        .style.display =
+        isHost
+            ? "block"
+            : "none";
+
+
+    $("impostorSetting")
+        .disabled =
+        !isHost;
+
+    $("cooldownSetting")
+        .disabled =
+        !isHost;
+
+    $("meetingSetting")
+        .disabled =
+        !isHost;
+}
+
+
+/* =====================
+   SETTINGS
+===================== */
+
+function updateSettings() {
+
+    if (
+        myId !== hostId
+    ) return;
+
+    send(
+        "settings",
+        {
+            impostors:
+                Number(
+                    $("impostorSetting")
+                        .value
+                ),
+
+            killCooldown:
+                Number(
+                    $("cooldownSetting")
+                        .value
+                ),
+
+            meetingTime:
+                Number(
+                    $("meetingSetting")
+                        .value
+                )
         }
     );
-
 }
 
 
-/* ======================================================
-   START ONLINE GAME
-======================================================= */
+$("impostorSetting")
+    .onchange =
+    updateSettings;
 
-function startOnlineGame(){
+$("cooldownSetting")
+    .onchange =
+    updateSettings;
 
-    const playerCount =
-        Object.keys(players).length;
-
-    impostersWanted =
-        Number(
-            document
-            .getElementById(
-                "imposterCount"
-            )
-            .value
-        );
-
-    killCooldown =
-        Number(
-            document
-            .getElementById(
-                "killCooldown"
-            )
-            .value
-        );
+$("meetingSetting")
+    .onchange =
+    updateSettings;
 
 
-    if(playerCount < 2){
+$("startBtn")
+    .onclick = () => {
 
-        alert(
-            "최소 2명이 필요합니다."
-        );
+        send("start");
 
-        return;
-    }
+    };
 
 
-    if(impostersWanted >= playerCount){
-
-        alert(
-            "임포스터 수가 너무 많습니다."
-        );
-
-        return;
-    }
-
-
-    assignRoles();
-
-
-    broadcast({
-
-        type:"start",
-
-        imposters:
-            impostersWanted,
-
-        cooldown:
-            killCooldown,
-
-        players:
-            players
-
-    });
-
-
-    startGame();
-
-}
-
-
-/* ======================================================
-   ASSIGN ROLES
-======================================================= */
-
-function assignRoles(){
-
-    const ids =
-        Object.keys(players);
-
-    ids.forEach(
-        id=>{
-            players[id].role =
-                "crew";
-        }
-    );
-
-
-    const shuffled =
-        [...ids]
-        .sort(
-            ()=>Math.random()-0.5
-        );
-
-
-    for(
-        let i=0;
-        i<impostersWanted;
-        i++
-    ){
-
-        players[
-            shuffled[i]
-        ].role =
-            "imposter";
-
-    }
-
-
-    rolesAssigned = true;
-
-}
-
-
-/* ======================================================
+/* =====================
    START GAME
-======================================================= */
+===================== */
 
-function startGame(){
+function startLocalGame(msg) {
 
-    document
-    .getElementById("menu")
-    .style.display =
-        "none";
+    $("lobbyScreen")
+        .classList.add("hidden");
 
-    document
-    .getElementById("game")
-    .style.display =
-        "block";
+    $("gameScreen")
+        .classList.remove("hidden");
 
     gameStarted = true;
 
+    myRole =
+        msg.self.role;
 
-    const me =
-        players[myId];
+    myColor =
+        msg.self.color;
 
-    if(!me) return;
+    players =
+        msg.players || [];
 
+    myTasks =
+        [false, false, false];
 
-    if(me.role === "imposter"){
+    taskTotal =
+        players.filter(
+            p => p.role === "crew"
+        ).length * 3;
 
-        document
-        .getElementById("roleText")
-        .innerText =
-            "🔴 임포스터";
+    taskDone = 0;
 
-        document
-        .getElementById("roleText")
+    $("roleText")
+        .textContent =
+        myRole === "impostor"
+            ? "🔴 임포스터"
+            : "🔵 시민";
+
+    $("roleText")
         .style.color =
-            "#ff4d4d";
+        myRole === "impostor"
+            ? "#ef5350"
+            : "#42a5f5";
 
-        document
-        .getElementById("killBtn")
-        .style.display =
-            "block";
+    updateTaskBar();
 
-    }else{
-
-        document
-        .getElementById("roleText")
-        .innerText =
-            me.alive
-            ? "🔵 크루원"
-            : "👻 유령";
-
-        document
-        .getElementById("roleText")
-        .style.color =
-            "#4fc3ff";
-
-    }
-
-
-    document
-    .getElementById("roomCodeText")
-    .innerText =
-        roomCode.substring(0,8);
-
-
-    setupControls();
-
-    updateTaskUI();
-
-    requestAnimationFrame(loop);
-
-}
-
-
-/* ======================================================
-   CONTROLS
-======================================================= */
-
-let keys = {};
-
-
-function setupControls(){
-
-    window.addEventListener(
-        "keydown",
-        e=>{
-
-            keys[
-                e.key.toLowerCase()
-            ] = true;
-
-        }
+    requestAnimationFrame(
+        gameLoop
     );
-
-
-    window.addEventListener(
-        "keyup",
-        e=>{
-
-            keys[
-                e.key.toLowerCase()
-            ] = false;
-
-        }
-    );
-
-
-    function hold(
-        id,
-        key
-    ){
-
-        const btn =
-            document
-            .getElementById(id);
-
-        btn.addEventListener(
-            "pointerdown",
-            e=>{
-
-                e.preventDefault();
-
-                keys[key] = true;
-
-            }
-        );
-
-        btn.addEventListener(
-            "pointerup",
-            e=>{
-
-                e.preventDefault();
-
-                keys[key] = false;
-
-            }
-        );
-
-        btn.addEventListener(
-            "pointerleave",
-            ()=>{
-                keys[key] = false;
-            }
-        );
-
-    }
-
-
-    hold("up","w");
-    hold("down","s");
-    hold("left","a");
-    hold("right","d");
-
 }
 
 
-/* ======================================================
-   COLLISION
-======================================================= */
+/* =====================
+   GAME LOOP
+===================== */
 
-function collides(
-    x,
-    y
-){
+function gameLoop(time) {
 
-    const r = 18;
-
-
-    for(
-        const wall of walls
-    ){
-
-        if(
-            x+r > wall.x &&
-            x-r < wall.x+wall.w &&
-            y+r > wall.y &&
-            y-r < wall.y+wall.h
-        ){
-
-            return true;
-
-        }
-
-    }
-
-    return false;
-
-}
-
-
-/* ======================================================
-   MOVEMENT
-======================================================= */
-
-let lastMoveSend = 0;
-
-
-function updateMovement(){
-
-    const me =
-        players[myId];
-
-    if(
-        !me ||
-        !me.alive ||
-        meetingActive
-    ){
-
+    if (!gameStarted)
         return;
 
-    }
+    moveLocalPlayer(
+        time
+    );
 
+    drawGame();
+
+    requestAnimationFrame(
+        gameLoop
+    );
+}
+
+
+/* =====================
+   MOVEMENT
+===================== */
+
+window.addEventListener(
+    "keydown",
+    e => {
+
+        keys[
+            e.key.toLowerCase()
+        ] = true;
+
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    e => {
+
+        keys[
+            e.key.toLowerCase()
+        ] = false;
+
+    }
+);
+
+
+function getMe() {
+
+    return players.find(
+        p => p.id === myId
+    );
+}
+
+
+function moveLocalPlayer(time) {
+
+    const me =
+        getMe();
+
+    if (!me || !me.alive)
+        return;
 
     let dx = 0;
     let dy = 0;
 
-
-    if(
+    if (
         keys["w"] ||
         keys["arrowup"]
-    ) dy -= PLAYER_SPEED;
+    ) dy -= 1;
 
-    if(
+    if (
         keys["s"] ||
         keys["arrowdown"]
-    ) dy += PLAYER_SPEED;
+    ) dy += 1;
 
-    if(
+    if (
         keys["a"] ||
         keys["arrowleft"]
-    ) dx -= PLAYER_SPEED;
+    ) dx -= 1;
 
-    if(
+    if (
         keys["d"] ||
         keys["arrowright"]
-    ) dx += PLAYER_SPEED;
+    ) dx += 1;
 
+    if (!dx && !dy)
+        return;
 
-    if(dx && dy){
+    const length =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
 
-        dx *= .707;
-        dy *= .707;
+    dx /= length;
+    dy /= length;
 
-    }
+    const speed = 3;
 
+    me.x +=
+        dx * speed;
 
-    const nx =
-        me.x + dx;
-
-    const ny =
-        me.y + dy;
-
-
-    if(!collides(nx,me.y))
-        me.x = nx;
-
-    if(!collides(me.x,ny))
-        me.y = ny;
-
+    me.y +=
+        dy * speed;
 
     me.x =
         Math.max(
-            -760,
-            Math.min(760,me.x)
+            40,
+            Math.min(
+                960,
+                me.x
+            )
         );
 
     me.y =
         Math.max(
-            -460,
-            Math.min(460,me.y)
+            40,
+            Math.min(
+                650,
+                me.y
+            )
         );
 
+    if (
+        time - lastMove >
+        40
+    ) {
 
-    if(
-        performance.now() -
-        lastMoveSend >
-        50
-    ){
+        send(
+            "move",
+            {
+                x: me.x,
+                y: me.y
+            }
+        );
 
-        lastMoveSend =
-            performance.now();
-
-        sendToHost({
-
-            type:"move",
-
-            id:myId,
-
-            x:me.x,
-
-            y:me.y
-
-        });
-
+        lastMove =
+            time;
     }
-
 }
 
 
-/* ======================================================
-   GAME LOOP
-======================================================= */
+/* =====================
+   MOBILE BUTTONS
+===================== */
 
-function loop(){
+function holdKey(
+    key,
+    button
+) {
 
-    if(gameStarted){
+    const start = e => {
 
-        updateMovement();
+        e.preventDefault();
 
-        draw();
+        keys[key] = true;
+    };
 
-        drawMinimap();
+    const end = e => {
 
-    }
+        e.preventDefault();
 
-    requestAnimationFrame(loop);
+        keys[key] = false;
+    };
 
+    button.addEventListener(
+        "pointerdown",
+        start
+    );
+
+    button.addEventListener(
+        "pointerup",
+        end
+    );
+
+    button.addEventListener(
+        "pointercancel",
+        end
+    );
+
+    button.addEventListener(
+        "pointerleave",
+        end
+    );
 }
 
 
-/* ======================================================
-   DRAW
-======================================================= */
+holdKey(
+    "w",
+    $("upBtn")
+);
 
-function draw(){
+holdKey(
+    "s",
+    $("downBtn")
+);
+
+holdKey(
+    "a",
+    $("leftBtn")
+);
+
+holdKey(
+    "d",
+    $("rightBtn")
+);
+
+
+/* =====================
+   DRAW GAME
+===================== */
+
+function drawGame() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // 바닥
 
     ctx.fillStyle =
-        "#11161d";
+        "#37474f";
 
     ctx.fillRect(
         0,
         0,
-        W,
-        H
+        1000,
+        700
     );
 
 
-    const me =
-        players[myId];
-
-    if(!me) return;
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        W/2-me.x,
-        H/2-me.y
-    );
-
-
-    /*
-       MAP
-    */
-
-    ctx.fillStyle =
-        "#252c35";
-
-    ctx.fillRect(
-        -800,
-        -500,
-        MAP_W,
-        MAP_H
-    );
-
-
-    /*
-       ROOMS
-    */
+    // 방
 
     drawRoom(
-        -730,
-        -430,
-        300,
-        250,
-        "ELECTRICAL"
-    );
-
-    drawRoom(
-        -250,
-        -430,
-        500,
-        250,
+        60,
+        70,
+        260,
+        200,
         "CAFETERIA"
     );
 
     drawRoom(
-        300,
-        -430,
-        400,
-        250,
-        "COMMS"
+        360,
+        70,
+        260,
+        200,
+        "ENGINE"
     );
 
     drawRoom(
-        -730,
-        180,
-        300,
+        680,
+        70,
+        260,
+        200,
+        "LAB"
+    );
+
+    drawRoom(
+        60,
+        380,
+        260,
+        220,
+        "STORAGE"
+    );
+
+    drawRoom(
+        360,
+        380,
+        260,
         220,
         "MEDBAY"
     );
 
     drawRoom(
-        -250,
-        180,
-        500,
+        680,
+        380,
+        260,
         220,
-        "REACTOR"
-    );
-
-    drawRoom(
-        300,
-        180,
-        400,
-        220,
-        "ENGINE"
+        "SECURITY"
     );
 
 
-    /*
-       WALLS
-    */
+    // 통로
 
-    walls.forEach(
-        wall=>{
+    ctx.fillStyle =
+        "#546e7a";
 
-            ctx.fillStyle =
-                "#151a21";
+    ctx.fillRect(
+        320,
+        145,
+        40,
+        60
+    );
 
-            ctx.fillRect(
-                wall.x,
-                wall.y,
-                wall.w,
-                wall.h
-            );
+    ctx.fillRect(
+        620,
+        145,
+        60,
+        60
+    );
 
-            ctx.strokeStyle =
-                "#66717e";
+    ctx.fillRect(
+        320,
+        460,
+        40,
+        60
+    );
 
-            ctx.lineWidth = 2;
-
-            ctx.strokeRect(
-                wall.x,
-                wall.y,
-                wall.w,
-                wall.h
-            );
-
-        }
+    ctx.fillRect(
+        620,
+        460,
+        60,
+        60
     );
 
 
-    /*
-       TASKS
-    */
+    // 플레이어
 
-    tasks.forEach(
-        (task,index)=>{
+    for (
+        const p
+        of players
+    ) {
 
-            const done =
-                me.tasks.includes(index);
-
-            ctx.fillStyle =
-                done
-                ? "#27ae60"
-                : "#f1c40f";
-
-            ctx.beginPath();
-
-            ctx.arc(
-                task.x,
-                task.y,
-                14,
-                0,
-                Math.PI*2
-            );
-
-            ctx.fill();
-
-            ctx.fillStyle =
-                "#111";
-
-            ctx.font =
-                "14px Arial";
-
-            ctx.textAlign =
-                "center";
-
-            ctx.fillText(
-                done ? "✓" : "!",
-                task.x,
-                task.y+5
-            );
-
-        }
-    );
-
-
-    /*
-       BODIES
-    */
-
-    bodies.forEach(
-        body=>{
-
-            ctx.fillStyle =
-                "#8e44ad";
-
-            ctx.beginPath();
-
-            ctx.arc(
-                body.x,
-                body.y,
-                17,
-                0,
-                Math.PI*2
-            );
-
-            ctx.fill();
-
-            ctx.fillStyle =
-                "white";
-
-            ctx.font =
-                "14px Arial";
-
-            ctx.textAlign =
-                "center";
-
-            ctx.fillText(
-                "☠",
-                body.x,
-                body.y+5
-            );
-
-        }
-    );
-
-
-    /*
-       PLAYERS
-    */
-
-    Object.values(players)
-    .forEach(
-        p=>{
-
-            if(!p.alive) return;
-
-            drawPlayer(p);
-
-        }
-    );
-
-
-    /*
-       DEAD PLAYERS AS GHOST
-    */
-
-    if(!me.alive){
-
-        Object.values(players)
-        .forEach(
-            p=>{
-
-                if(p.alive) return;
-
-                if(p.id === me.id)
-                    return;
-
-                drawGhost(p);
-
-            }
+        drawPlayer(
+            p
         );
 
     }
 
 
-    ctx.restore();
-
+    $("playerCount")
+        .textContent =
+        players.length;
 }
 
-
-/* ======================================================
-   ROOM
-======================================================= */
 
 function drawRoom(
     x,
@@ -2140,10 +1856,10 @@ function drawRoom(
     w,
     h,
     name
-){
+) {
 
     ctx.fillStyle =
-        "#303944";
+        "#455a64";
 
     ctx.fillRect(
         x,
@@ -2152,9 +1868,8 @@ function drawRoom(
         h
     );
 
-
     ctx.strokeStyle =
-        "#7a8591";
+        "#90a4ae";
 
     ctx.lineWidth = 4;
 
@@ -2165,1896 +1880,748 @@ function drawRoom(
         h
     );
 
-
     ctx.fillStyle =
-        "#aeb7c1";
+        "#cfd8dc";
 
     ctx.font =
-        "17px Arial";
+        "bold 16px Arial";
 
     ctx.textAlign =
         "center";
 
     ctx.fillText(
         name,
-        x+w/2,
-        y+27
+        x + w / 2,
+        y + 25
     );
-
 }
 
 
-/* ======================================================
-   PLAYER
-======================================================= */
+function drawPlayer(p) {
 
-function drawPlayer(p){
+    if (
+        !p.alive &&
+        p.id !== myId
+    ) {
 
-    /*
-       body
-    */
+        return;
+    }
+
+    let color =
+        p.color;
+
+    if (
+        p.id === myId &&
+        !p.alive
+    ) {
+
+        color =
+            "rgba(255,255,255,.45)";
+    }
+
+    ctx.save();
+
+    ctx.translate(
+        p.x,
+        p.y
+    );
+
+
+    // 몸
 
     ctx.fillStyle =
-        p.color;
+        color;
 
     ctx.beginPath();
 
     ctx.arc(
-        p.x,
-        p.y,
-        20,
         0,
-        Math.PI*2
+        0,
+        18,
+        0,
+        Math.PI * 2
     );
 
     ctx.fill();
 
 
-    /*
-       visor
-    */
+    // 바이저
 
     ctx.fillStyle =
-        "#a9eaff";
+        "#b3e5fc";
 
     ctx.beginPath();
 
     ctx.ellipse(
-        p.x+7,
-        p.y-5,
-        11,
+        7,
+        -5,
+        10,
         7,
         0,
         0,
-        Math.PI*2
+        Math.PI * 2
     );
 
     ctx.fill();
 
 
-    /*
-       name
-    */
+    // 이름
 
     ctx.fillStyle =
         "white";
 
     ctx.font =
-        "13px Arial";
+        "12px Arial";
 
     ctx.textAlign =
         "center";
 
     ctx.fillText(
         p.name,
-        p.x,
-        p.y-30
+        0,
+        34
     );
 
 
-    if(p.id === myId){
+    if (
+        p.id === myId
+    ) {
 
         ctx.strokeStyle =
             "white";
 
-        ctx.lineWidth = 2;
+        ctx.lineWidth =
+            2;
 
         ctx.beginPath();
 
         ctx.arc(
-            p.x,
-            p.y,
-            25,
             0,
-            Math.PI*2
+            0,
+            23,
+            0,
+            Math.PI * 2
         );
 
         ctx.stroke();
-
     }
 
-
-    /*
-       imposters can see other imposters
-    */
-
-    const me =
-        players[myId];
-
-    if(
-        me &&
-        me.role === "imposter" &&
-        p.role === "imposter" &&
-        p.id !== me.id
-    ){
-
-        ctx.fillStyle =
-            "#ff3333";
-
-        ctx.font =
-            "16px Arial";
-
-        ctx.fillText(
-            "🔴",
-            p.x,
-            p.y-45
-        );
-
-    }
-
+    ctx.restore();
 }
 
 
-/* ======================================================
-   GHOST
-======================================================= */
+/* =====================
+   TARGET SELECTION
+===================== */
 
-function drawGhost(p){
+canvas.addEventListener(
+    "pointerdown",
+    e => {
 
-    ctx.globalAlpha = .35;
+        if (!gameStarted)
+            return;
 
-    ctx.fillStyle =
-        "#bdefff";
+        const rect =
+            canvas.getBoundingClientRect();
 
-    ctx.beginPath();
+        const scaleX =
+            canvas.width /
+            rect.width;
 
-    ctx.arc(
-        p.x,
-        p.y,
-        20,
-        0,
-        Math.PI*2
-    );
+        const scaleY =
+            canvas.height /
+            rect.height;
 
-    ctx.fill();
+        const x =
+            (e.clientX -
+                rect.left) *
+            scaleX;
 
-    ctx.globalAlpha = 1;
+        const y =
+            (e.clientY -
+                rect.top) *
+            scaleY;
 
-}
+        selectedTarget =
+            null;
 
+        let closest =
+            null;
 
-/* ======================================================
-   MINIMAP
-======================================================= */
+        let distance =
+            Infinity;
 
-function drawMinimap(){
+        for (
+            const p
+            of players
+        ) {
 
-    const me =
-        players[myId];
-
-    if(!me) return;
-
-
-    miniCtx.clearRect(
-        0,
-        0,
-        150,
-        100
-    );
-
-
-    miniCtx.fillStyle =
-        "#111";
-
-    miniCtx.fillRect(
-        0,
-        0,
-        150,
-        100
-    );
-
-
-    /*
-       map
-    */
-
-    miniCtx.strokeStyle =
-        "#555";
-
-    miniCtx.strokeRect(
-        5,
-        5,
-        140,
-        90
-    );
-
-
-    Object.values(players)
-    .forEach(
-        p=>{
-
-            if(!p.alive) return;
-
-            const x =
-                5+
-                ((p.x+800)/1600)*140;
-
-            const y =
-                5+
-                ((p.y+500)/1000)*90;
-
-            miniCtx.fillStyle =
-                p.id===myId
-                ? "#fff"
-                : p.color;
-
-            miniCtx.beginPath();
-
-            miniCtx.arc(
-                x,
-                y,
-                3,
-                0,
-                Math.PI*2
-            );
-
-            miniCtx.fill();
-
-        }
-    );
-
-}
-
-
-/* ======================================================
-   KILL
-======================================================= */
-
-function killNearest(){
-
-    const me =
-        players[myId];
-
-    if(
-        !me ||
-        !me.alive ||
-        me.role !== "imposter"
-    ){
-
-        return;
-
-    }
-
-
-    const now =
-        Date.now();
-
-    if(
-        now-lastKillTime <
-        killCooldown*1000
-    ){
-
-        const remain =
-            Math.ceil(
-                (
-                    killCooldown*1000 -
-                    (
-                        now-lastKillTime
-                    )
-                )/1000
-            );
-
-        addMessage(
-            "SYSTEM",
-            "킬 쿨타임 "+
-            remain+
-            "초"
-        );
-
-        return;
-
-    }
-
-
-    let target = null;
-
-    let nearest =
-        Infinity;
-
-
-    Object.values(players)
-    .forEach(
-        p=>{
-
-            if(
-                p.id === me.id ||
+            if (
+                p.id === myId ||
                 !p.alive
-            ){
+            ) continue;
 
-                return;
+            const dx =
+                x - p.x;
 
-            }
-
+            const dy =
+                y - p.y;
 
             const d =
-                Math.hypot(
-                    p.x-me.x,
-                    p.y-me.y
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
                 );
 
+            if (
+                d < 35 &&
+                d < distance
+            ) {
 
-            if(
-                d < nearest &&
-                d <= KILL_DISTANCE
-            ){
+                closest =
+                    p;
 
-                nearest = d;
-
-                target = p;
-
+                distance =
+                    d;
             }
-
         }
-    );
 
-
-    if(!target){
-
-        addMessage(
-            "SYSTEM",
-            "가까운 플레이어가 없습니다."
-        );
-
-        return;
+        selectedTarget =
+            closest;
 
     }
+);
 
 
-    lastKillTime =
-        Date.now();
+/* =====================
+   KILL
+===================== */
 
+$("killBtn")
+    .onclick = () => {
 
-    sendToHost({
+        if (
+            myRole !==
+            "impostor"
+        ) return;
 
-        type:"kill",
+        if (!selectedTarget) {
 
-        killer:myId,
-
-        target:target.id
-
-    });
-
-}
-
-
-/* ======================================================
-   HOST KILL
-======================================================= */
-
-function processKill(
-    killerId,
-    targetId
-){
-
-    if(!isHost) return;
-
-
-    const killer =
-        players[killerId];
-
-    const target =
-        players[targetId];
-
-
-    if(
-        !killer ||
-        !target ||
-        !killer.alive ||
-        !target.alive ||
-        killer.role !== "imposter"
-    ){
-
-        return;
-
-    }
-
-
-    const distance =
-        Math.hypot(
-            killer.x-target.x,
-            killer.y-target.y
-        );
-
-
-    if(
-        distance >
-        KILL_DISTANCE+10
-    ){
-
-        return;
-
-    }
-
-
-    target.alive = false;
-
-
-    bodies.push({
-
-        x:target.x,
-
-        y:target.y,
-
-        playerId:target.id
-
-    });
-
-
-    broadcast({
-
-        type:"player",
-
-        player:target
-
-    });
-
-
-    broadcast({
-
-        type:"body",
-
-        bodies:bodies
-
-    });
-
-
-    addMessage(
-        "SYSTEM",
-        "누군가 사망했습니다."
-    );
-
-
-    checkWin();
-
-}
-
-
-/* ======================================================
-   REPORT
-======================================================= */
-
-function reportBody(){
-
-    const me =
-        players[myId];
-
-    if(
-        !me ||
-        !me.alive
-    ){
-
-        return;
-
-    }
-
-
-    let bodyFound = null;
-
-
-    for(
-        const body of bodies
-    ){
-
-        const d =
-            Math.hypot(
-                body.x-me.x,
-                body.y-me.y
+            alert(
+                "죽일 플레이어를 선택하세요."
             );
 
-
-        if(
-            d <= REPORT_DISTANCE
-        ){
-
-            bodyFound =
-                body;
-
-            break;
-
+            return;
         }
 
-    }
-
-
-    if(!bodyFound){
-
-        addMessage(
-            "SYSTEM",
-            "근처에 시체가 없습니다."
+        send(
+            "kill",
+            {
+                targetId:
+                    selectedTarget.id
+            }
         );
 
-        return;
-
-    }
-
-
-    if(isHost){
-
-        startMeeting(
-            "💀 시체가 발견되었습니다!"
-        );
-
-    }else{
-
-        sendToHost({
-
-            type:"meeting",
-
-            reason:
-                "💀 시체가 발견되었습니다!"
-
-        });
-
-    }
-
-}
+        selectedTarget =
+            null;
+    };
 
 
-/* ======================================================
-   EMERGENCY
-======================================================= */
+/* =====================
+   REPORT
+===================== */
 
-function callEmergency(){
+$("reportBtn")
+    .onclick = () => {
 
-    const me =
-        players[myId];
+        send("report");
 
-    if(
-        !me ||
-        !me.alive
-    ) return;
+    };
 
 
-    if(isHost){
-
-        startMeeting(
-            "🚨 긴급회의가 호출되었습니다!"
-        );
-
-    }else{
-
-        sendToHost({
-
-            type:"meeting",
-
-            reason:
-                "🚨 긴급회의가 호출되었습니다!"
-
-        });
-
-    }
-
-}
-
-
-/* ======================================================
+/* =====================
    MEETING
-======================================================= */
+===================== */
 
-function startMeeting(reason){
+$("meetingBtn")
+    .onclick = () => {
 
-    meetingActive = true;
+        send("emergency");
 
-    meetingVotes = {};
-
-    meetingTimer = 30;
-
-
-    document
-    .getElementById("meeting")
-    .style.display =
-        "block";
+    };
 
 
-    document
-    .getElementById("meetingReason")
-    .innerText =
-        reason;
+function openMeeting(msg) {
+
+    $("meetingScreen")
+        .classList.remove("hidden");
+
+    const grid =
+        $("voteGrid");
+
+    grid.innerHTML = "";
+
+    for (
+        const p
+        of players
+    ) {
+
+        if (!p.alive)
+            continue;
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+        button.className =
+            "voteBtn";
+
+        button.textContent =
+            p.name;
+
+        button.onclick = () => {
+
+            send(
+                "vote",
+                {
+                    target:
+                        p.id
+                }
+            );
+
+            button.classList.add(
+                "selected"
+            );
+        };
+
+        grid.appendChild(
+            button
+        );
+    }
 
 
-    document
-    .getElementById("voteResult")
-    .innerText =
-        "투표할 플레이어를 선택하세요.";
+    $("meetingTimer")
+        .textContent =
+        msg.time;
 
 
-    createVoteCards();
-
+    let time =
+        msg.time;
 
     clearInterval(
-        meetingInterval
+        meetingTimer
     );
 
-
-    meetingInterval =
+    meetingTimer =
         setInterval(
-            ()=>{
+            () => {
 
-                meetingTimer--;
+                time--;
 
-                document
-                .getElementById(
-                    "meetingTimer"
-                )
-                .innerText =
-                    meetingTimer;
-
-
-                if(
-                    meetingTimer<=0
-                ){
-
-                    clearInterval(
-                        meetingInterval
+                $("meetingTimer")
+                    .textContent =
+                    Math.max(
+                        0,
+                        time
                     );
 
-                    if(isHost){
+                if (time <= 0) {
 
-                        finishVoting();
-
-                    }
-
+                    clearInterval(
+                        meetingTimer
+                    );
                 }
 
             },
             1000
         );
-
 }
 
 
-/* ======================================================
-   VOTE CARDS
-======================================================= */
+$("skipVote")
+    .onclick = () => {
 
-function createVoteCards(){
-
-    const grid =
-        document
-        .getElementById("voteGrid");
-
-    grid.innerHTML = "";
-
-
-    Object.values(players)
-    .forEach(
-        p=>{
-
-            const div =
-                document
-                .createElement("div");
-
-            div.className =
-                "voteCard";
-
-
-            if(!p.alive){
-
-                div.classList.add(
-                    "dead"
-                );
-
-                div.innerHTML =
-                    "👻<br>"+
-                    p.name+
-                    "<br><small>사망</small>";
-
-            }else{
-
-                div.innerHTML =
-                    "🧑‍🚀<br>"+
-                    p.name;
-
-                div.onclick =
-                    ()=>{
-
-                        castVote(
-                            p.id
-                        );
-
-                    };
-
+        send(
+            "vote",
+            {
+                target:
+                    "skip"
             }
+        );
+    };
 
 
-            grid.appendChild(div);
+function closeMeeting() {
 
-        }
+    clearInterval(
+        meetingTimer
     );
 
-
-    const skip =
-        document
-        .createElement("div");
-
-    skip.className =
-        "voteCard";
-
-    skip.innerHTML =
-        "⏭️<br>SKIP";
-
-    skip.onclick =
-        ()=>{
-
-            castVote("skip");
-
-        };
-
-    grid.appendChild(skip);
-
+    $("meetingScreen")
+        .classList.add("hidden");
 }
 
 
-/* ======================================================
-   CAST VOTE
-======================================================= */
-
-function castVote(target){
-
-    const me =
-        players[myId];
-
-    if(
-        !me ||
-        !me.alive
-    ) return;
-
-
-    sendToHost({
-
-        type:"vote",
-
-        voter:myId,
-
-        target:target
-
-    });
-
-
-    document
-    .getElementById("voteResult")
-    .innerText =
-        "투표 완료!";
-
-
-    /*
-       중복 투표 방지
-    */
-
-    document
-    .querySelectorAll(
-        ".voteCard"
-    )
-    .forEach(
-        el=>{
-            el.style.pointerEvents =
-                "none";
-        }
-    );
-
-}
-
-
-/* ======================================================
-   PROCESS VOTE
-======================================================= */
-
-function processVote(
-    voter,
-    target
-){
-
-    if(!isHost) return;
-
-
-    if(
-        !players[voter] ||
-        !players[voter].alive
-    ){
-
-        return;
-
-    }
-
-
-    meetingVotes[voter] =
-        target;
-
-
-    const alivePlayers =
-        Object.values(players)
-        .filter(
-            p=>p.alive
-        );
-
-
-    if(
-        Object.keys(meetingVotes)
-        .length >=
-        alivePlayers.length
-    ){
-
-        finishVoting();
-
-    }
-
-}
-
-
-/* ======================================================
-   FINISH VOTING
-======================================================= */
-
-function finishVoting(){
-
-    if(!isHost) return;
-
-
-    const count = {};
-
-
-    Object.values(
-        meetingVotes
-    )
-    .forEach(
-        target=>{
-
-            if(target==="skip")
-                return;
-
-            count[target] =
-                (count[target]||0)+1;
-
-        }
-    );
-
-
-    let ejected =
-        null;
-
-    let highest = 0;
-
-
-    Object.entries(count)
-    .forEach(
-        ([id,votes])=>{
-
-            if(
-                votes > highest
-            ){
-
-                highest = votes;
-
-                ejected = id;
-
-            }
-
-        }
-    );
-
-
-    /*
-       동률이면 아무도 추방 안 함
-    */
-
-    const top =
-        Object.entries(count)
-        .filter(
-            ([id,v])=>
-                v===highest
-        );
-
-
-    if(
-        top.length > 1
-    ){
-
-        ejected = null;
-
-    }
-
-
-    let ejectedRole =
-        null;
-
-
-    if(ejected){
-
-        ejectedRole =
-            players[ejected].role;
-
-        players[ejected].alive =
-            false;
-
-
-        broadcast({
-
-            type:"player",
-
-            player:
-                players[ejected]
-
-        });
-
-    }
-
-
-    broadcast({
-
-        type:"voteResult",
-
-        target:ejected,
-
-        ejectedRole:ejectedRole
-
-    });
-
-
-    finishMeetingDisplay(
-        ejected,
-        ejectedRole
-    );
-
-
-    setTimeout(
-        ()=>{
-
-            meetingActive = false;
-
-            document
-            .getElementById("meeting")
-            .style.display =
-                "none";
-
-            bodies = [];
-
-            broadcast({
-
-                type:"body",
-
-                bodies:[]
-
-            });
-
-
-            meetingVotes = {};
-
-            checkWin();
-
-        },
-        4000
-    );
-
-}
-
-
-/* ======================================================
-   MEETING RESULT
-======================================================= */
-
-function finishMeetingDisplay(
-    target,
-    role
-){
-
-    let text;
-
-
-    if(!target){
-
-        text =
-            "⏭️ 아무도 추방되지 않았습니다.";
-
-    }else{
-
-        const name =
-            players[target]?.name ||
-            "플레이어";
-
-
-        text =
-            "🚀 "+
-            name+
-            " 님이 추방되었습니다.";
-
-
-        if(role==="imposter"){
-
-            text +=
-                "<br>🔴 임포스터였습니다!";
-
-        }else{
-
-            text +=
-                "<br>🔵 크루원이었습니다.";
-
-        }
-
-    }
-
-
-    document
-    .getElementById("voteResult")
-    .innerHTML =
-        text;
-
-}
-
-
-/* ======================================================
-   WIN CONDITION
-======================================================= */
-
-function checkWin(){
-
-    if(!isHost) return;
-
-
-    const alive =
-        Object.values(players)
-        .filter(
-            p=>p.alive
-        );
-
-
-    const imp =
-        alive.filter(
-            p=>p.role==="imposter"
-        );
-
-
-    const crew =
-        alive.filter(
-            p=>p.role!=="imposter"
-        );
-
-
-    /*
-       임포스터 전멸
-    */
-
-    if(
-        imp.length===0
-    ){
-
-        endGame(
-            "crew"
-        );
-
-        return;
-
-    }
-
-
-    /*
-       임포스터가 크루원과 같아짐
-    */
-
-    if(
-        imp.length >=
-        crew.length
-    ){
-
-        endGame(
-            "imposter"
-        );
-
-        return;
-
-    }
-
-
-    /*
-       전체 미션
-    */
-
-    let completed = 0;
-
-
-    Object.values(players)
-    .forEach(
-        p=>{
-            completed +=
-                p.tasks.length;
-        }
-    );
-
-
-    if(
-        completed >=
-        tasks.length
-    ){
-
-        endGame(
-            "crew"
-        );
-
-    }
-
-}
-
-
-/* ======================================================
-   GAME OVER
-======================================================= */
-
-function endGame(winner){
-
-    broadcast({
-
-        type:"gameOver",
-
-        winner:winner
-
-    });
-
-
-    showGameOver(
-        winner
-    );
-
-}
-
-
-function showGameOver(winner){
-
-    document
-    .getElementById("gameOver")
-    .style.display =
-        "flex";
-
-
-    if(winner==="crew"){
-
-        document
-        .getElementById(
-            "gameOverTitle"
-        )
-        .innerText =
-            "🔵 크루원 승리!";
-
-        document
-        .getElementById(
-            "gameOverText"
-        )
-        .innerText =
-            "임포스터를 모두 찾아냈거나 미션을 완료했습니다.";
-
-    }else{
-
-        document
-        .getElementById(
-            "gameOverTitle"
-        )
-        .innerText =
-            "🔴 임포스터 승리!";
-
-        document
-        .getElementById(
-            "gameOverText"
-        )
-        .innerText =
-            "임포스터가 우주선을 장악했습니다.";
-
-    }
-
-}
-
-
-/* ======================================================
-   TASK CLICK
-======================================================= */
-
-canvas.addEventListener(
-    "pointerdown",
-    e=>{
-
-        if(
-            meetingActive
-        ) return;
-
+/* =====================
+   TASKS
+===================== */
+
+$("taskBtn")
+    .onclick = () => {
 
         const me =
-            players[myId];
+            getMe();
 
-        if(
-            !me ||
-            !me.alive
-        ) return;
+        if (!me || !me.alive)
+            return;
 
+        if (
+            myRole ===
+            "impostor"
+        ) {
 
-        const wx =
-            e.clientX -
-            W/2+
-            me.x;
+            alert(
+                "임포스터는 미션을 수행할 수 없습니다."
+            );
 
-        const wy =
-            e.clientY -
-            H/2+
-            me.y;
+            return;
+        }
 
+        $("taskPanel")
+            .classList.remove(
+                "hidden"
+            );
 
-        tasks.forEach(
-            (task,index)=>{
-
-                const d =
-                    Math.hypot(
-                        wx-task.x,
-                        wy-task.y
-                    );
+        updateTaskButtons();
+    };
 
 
-                if(
-                    d<45 &&
-                    !me.tasks.includes(index)
-                ){
+$("closeTask")
+    .onclick = () => {
 
-                    completeTask(
-                        index
-                    );
+        $("taskPanel")
+            .classList.add(
+                "hidden"
+            );
+    };
 
-                }
 
+document.querySelectorAll(
+    ".taskButton"
+).forEach(
+    button => {
+
+        button.onclick = () => {
+
+            const index =
+                Number(
+                    button.dataset.task
+                );
+
+            if (
+                myTasks[index]
+            ) {
+
+                alert(
+                    "이미 완료한 미션입니다."
+                );
+
+                return;
             }
-        );
 
+            send(
+                "task",
+                {
+                    index
+                }
+            );
+
+            $("taskPanel")
+                .classList.add(
+                    "hidden"
+                );
+        };
     }
 );
 
 
-/* ======================================================
-   COMPLETE TASK
-======================================================= */
+function updateTaskButtons() {
 
-function completeTask(index){
+    document.querySelectorAll(
+        ".taskButton"
+    ).forEach(
+        button => {
 
-    const me =
-        players[myId];
+            const index =
+                Number(
+                    button.dataset.task
+                );
 
-    if(
-        !me ||
-        !me.alive ||
-        me.role==="imposter"
-    ) return;
+            if (
+                myTasks[index]
+            ) {
 
+                button.textContent =
+                    "✓ 완료";
 
-    if(
-        me.tasks.includes(index)
-    ) return;
+                button.disabled =
+                    true;
 
+            } else {
 
-    me.tasks.push(index);
-
-
-    sendToHost({
-
-        type:"player",
-
-        player:me
-
-    });
-
-
-    if(isHost){
-
-        checkWin();
-
-    }
-
-
-    updateTaskUI();
-
+                button.disabled =
+                    false;
+            }
+        }
+    );
 }
 
 
-/* ======================================================
-   TASK UI
-======================================================= */
+function updateTaskBar() {
 
-function updateTaskUI(){
+    if (
+        taskTotal <= 0
+    ) {
 
-    const me =
-        players[myId];
+        $("taskFill")
+            .style.width =
+            "0%";
 
-    if(!me) return;
-
-
-    const total =
-        tasks.length;
-
-
-    const done =
-        me.tasks.length;
-
-
-    document
-    .getElementById("taskText")
-    .innerText =
-        "내 미션 "+
-        done+
-        " / "+
-        total;
-
-
-    /*
-       전체 미션 진행률
-    */
-
-    let completed = 0;
-
-
-    Object.values(players)
-    .forEach(
-        p=>{
-            completed +=
-                p.tasks.length;
-        }
-    );
-
-
-    const max =
-        tasks.length *
-        Math.max(
-            1,
-            Object.values(players)
-            .filter(
-                p=>p.role!=="imposter"
-            ).length
-        );
-
+        return;
+    }
 
     const percent =
         Math.min(
             100,
-            completed /
-            Math.max(
-                1,
-                max
-            ) *
+            (taskDone /
+                taskTotal) *
             100
         );
 
-
-    document
-    .getElementById(
-        "taskProgress"
-    )
-    .style.width =
-        percent+
-        "%";
-
+    $("taskFill")
+        .style.width =
+        percent + "%";
 }
 
 
-/* ======================================================
+/* =====================
    CHAT
-======================================================= */
+===================== */
 
-document
-.getElementById("chatInput")
-.addEventListener(
-    "keydown",
-    e=>{
-
-        if(
-            e.key!=="Enter"
-        ) return;
+$("chatSend")
+    .onclick =
+    sendChat;
 
 
-        const input =
-            e.target;
+$("chatInput")
+    .addEventListener(
+        "keydown",
+        e => {
 
-        const msg =
-            input.value.trim();
+            if (
+                e.key ===
+                "Enter"
+            ) {
 
+                sendChat();
 
-        if(!msg) return;
-
-
-        const data = {
-
-            type:"chat",
-
-            name:
-                players[myId]?.name ||
-                myName,
-
-            message:msg
-
-        };
+            }
+        }
+    );
 
 
-        addMessage(
-            data.name,
-            data.message
-        );
+function sendChat() {
+
+    const input =
+        $("chatInput");
+
+    const text =
+        input.value.trim();
+
+    if (!text)
+        return;
+
+    send(
+        "chat",
+        { text }
+    );
+
+    input.value = "";
+}
 
 
-        broadcast(
-            data
-        );
-
-
-        input.value = "";
-
-    }
-);
-
-
-function addMessage(
+function addChat(
     name,
-    message
-){
+    text,
+    color = "white"
+) {
 
     const div =
-        document
-        .createElement("div");
-
-
-    div.innerHTML =
-        "<b>"+
-        escapeHTML(name)+
-        ":</b> "+
-        escapeHTML(message);
-
-
-    const box =
-        document
-        .getElementById(
-            "messages"
+        document.createElement(
+            "div"
         );
 
+    div.innerHTML = `
+        <b style="color:${color}">
+            ${escapeHtml(name)}
+        </b>:
+        ${escapeHtml(text)}
+    `;
 
-    box.appendChild(div);
+    $("chatMessages")
+        .appendChild(div);
 
-    box.scrollTop =
-        box.scrollHeight;
-
+    $("chatMessages")
+        .scrollTop =
+        $("chatMessages")
+            .scrollHeight;
 }
 
 
-function escapeHTML(text){
+/* =====================
+   GAME OVER
+===================== */
 
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+function showGameOver(msg) {
 
-}
+    gameStarted =
+        false;
 
-
-/* ======================================================
-   NETWORK SEND
-======================================================= */
-
-function sendToHost(data){
-
-    if(isHost){
-
-        receiveData(
-            data,
-            null
+    $("gameOver")
+        .classList.remove(
+            "hidden"
         );
 
-        return;
+    if (
+        msg.winner ===
+        "crew"
+    ) {
 
+        $("winnerText")
+            .textContent =
+            "🔵 시민 승리";
+
+    } else {
+
+        $("winnerText")
+            .textContent =
+            "🔴 임포스터 승리";
     }
 
 
-    /*
-       방장 Peer ID = roomCode
-    */
+    const list =
+        $("finalPlayers");
 
-    const conn =
-        connections[roomCode];
+    list.innerHTML = "";
 
+    for (
+        const p
+        of msg.players
+    ) {
 
-    if(
-        conn &&
-        conn.open
-    ){
-
-        conn.send(data);
-
-    }
-
-}
-
-
-function broadcast(
-    data,
-    except=null
-){
-
-    Object.entries(
-        connections
-    )
-    .forEach(
-        ([id,conn])=>{
-
-            if(
-                id===except
-            ) return;
-
-
-            if(
-                conn &&
-                conn.open
-            ){
-
-                conn.send(data);
-
-            }
-
-        }
-    );
-
-}
-
-
-/* ======================================================
-   MOVE HOST HANDLING
-======================================================= */
-
-const originalReceive =
-    receiveData;
-
-
-/*
-   기존 receiveData에 kill/move/player
-   처리를 추가하기 위해 별도 처리
-*/
-
-const oldReceive =
-    receiveData;
-
-
-/*
-   데이터 후처리
-*/
-
-function hostProcess(
-    data
-){
-
-    if(!isHost)
-        return;
-
-
-    if(
-        data.type==="kill"
-    ){
-
-        processKill(
-            data.killer,
-            data.target
-        );
-
-    }
-
-
-    if(
-        data.type==="move"
-    ){
-
-        if(
-            players[data.id]
-        ){
-
-            players[data.id].x =
-                data.x;
-
-            players[data.id].y =
-                data.y;
-
-
-            broadcast(
-                data,
-                data.id
+        const div =
+            document.createElement(
+                "div"
             );
 
-        }
+        div.style.margin =
+            "8px";
 
-    }
+        div.innerHTML = `
+            ${escapeHtml(p.name)}
+            -
+            ${
+                p.role === "impostor"
+                    ? "🔴 임포스터"
+                    : "🔵 시민"
+            }
+            ${
+                p.alive
+                    ? ""
+                    : " 💀"
+            }
+        `;
 
-
-    if(
-        data.type==="player"
-    ){
-
-        if(
-            data.player &&
-            players[data.player.id]
-        ){
-
-            players[data.player.id] =
-                data.player;
-
-            broadcast({
-
-                type:"player",
-
-                player:
-                    data.player
-
-            });
-
-            updateTaskUI();
-
-            checkWin();
-
-        }
-
-    }
-
-
-    if(
-        data.type==="meeting"
-    ){
-
-        startMeeting(
-            data.reason
+        list.appendChild(
+            div
         );
-
-        broadcast(data);
-
     }
-
 }
 
 
-/*
-   sendToHost 재정의
-*/
+$("backLobbyBtn")
+    .onclick = () => {
 
-function sendToHostFinal(data){
+        location.reload();
 
-    if(isHost){
-
-        hostProcess(data);
-
-    }else{
-
-        const conn =
-            connections[roomCode];
-
-        if(
-            conn &&
-            conn.open
-        ){
-
-            conn.send(data);
-
-        }
-
-    }
-
-}
+    };
 
 
-/*
-   위 함수 사용
-*/
+/* =====================
+   UTILITY
+===================== */
 
-sendToHost =
-    sendToHostFinal;
+function escapeHtml(str) {
 
-
-/* ======================================================
-   HANDLE HOST DATA FIX
-======================================================= */
-
-const previousReceive =
-    receiveData;
-
-
-receiveData =
-function(data,conn){
-
-    if(
-        isHost &&
-        (
-            data.type==="kill" ||
-            data.type==="move" ||
-            data.type==="player" ||
-            data.type==="meeting" ||
-            data.type==="vote"
+    return String(str)
+        .replaceAll(
+            "&",
+            "&amp;"
         )
-    ){
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+}
 
-        if(
-            data.type==="kill"
-        ){
 
-            processKill(
-                data.killer,
-                data.target
-            );
+/* =====================
+   INITIAL UI
+===================== */
 
-            return;
+$("killBtn")
+    .style.display =
+    "none";
 
+
+setInterval(
+    () => {
+
+        if (
+            myRole ===
+            "impostor" &&
+            gameStarted
+        ) {
+
+            $("killBtn")
+                .style.display =
+                "block";
+
+        } else {
+
+            $("killBtn")
+                .style.display =
+                "none";
         }
 
-
-        if(
-            data.type==="move"
-        ){
-
-            if(
-                players[data.id]
-            ){
-
-                players[data.id].x =
-                    data.x;
-
-                players[data.id].y =
-                    data.y;
-
-                broadcast(
-                    data,
-                    data.id
-                );
-
-            }
-
-            return;
-
-        }
-
-
-        if(
-            data.type==="player"
-        ){
-
-            if(
-                players[data.player.id]
-            ){
-
-                players[data.player.id] =
-                    data.player;
-
-                broadcast({
-
-                    type:"player",
-
-                    player:
-                        data.player
-
-                });
-
-                updateTaskUI();
-
-                checkWin();
-
-            }
-
-            return;
-
-        }
-
-
-        if(
-            data.type==="meeting"
-        ){
-
-            startMeeting(
-                data.reason
-            );
-
-            broadcast(data);
-
-            return;
-
-        }
-
-
-        if(
-            data.type==="vote"
-        ){
-
-            processVote(
-                data.voter,
-                data.target
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    previousReceive(
-        data,
-        conn
-    );
-
-};
-
-
-/* ======================================================
-   INITIAL STATUS
-======================================================= */
-
-document
-.getElementById("status")
-.innerText =
-    "방을 만들거나 친구의 방에 참가하세요.";
-
-
-/* ======================================================
-   PREVENT PAGE SCROLL
-======================================================= */
-
-document.addEventListener(
-    "touchmove",
-    e=>{
-        if(gameStarted)
-            e.preventDefault();
     },
-    {
-        passive:false
-    }
-);
-
-
-/* ======================================================
-   CLEANUP
-======================================================= */
-
-window.addEventListener(
-    "beforeunload",
-    ()=>{
-
-        Object.values(
-            connections
-        )
-        .forEach(
-            conn=>{
-
-                try{
-                    conn.close();
-                }catch(e){}
-
-            }
-        );
-
-
-        if(peer){
-
-            try{
-                peer.destroy();
-            }catch(e){}
-
-        }
-
-    }
+    200
 );
 
 </script>
 
 </body>
 </html>
-```
